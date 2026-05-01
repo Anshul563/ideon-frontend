@@ -28,6 +28,7 @@ import { UploadButton } from "@/lib/uploadthing";
 
 export default function DashboardLayout({ children }: any) {
   const [user, setUser] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -44,6 +45,7 @@ export default function DashboardLayout({ children }: any) {
 
   useEffect(() => {
     fetchUser();
+    setMounted(true);
   }, []);
 
   return (
@@ -125,25 +127,27 @@ export default function DashboardLayout({ children }: any) {
                             )}
                           </div>
                           <div className="absolute -bottom-2 -right-2">
-                             <UploadButton
-                                endpoint="profilePicture"
-                                onClientUploadComplete={(res) => {
-                                  fetchUser();
-                                }}
-                                onUploadError={(error: Error) => {
-                                  console.error(error);
-                                }}
-                                appearance={{
-                                  button: "h-10 w-10 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:scale-105 active:scale-95 transition-all border-4 border-background p-0",
-                                  allowedContent: "hidden",
-                                }}
-                                content={{
-                                  button: <Camera className="w-4 h-4" />
-                                }}
-                                headers={{
-                                  Authorization: `Bearer ${localStorage.getItem("token")}`,
-                                }}
-                              />
+                             {mounted && (
+                               <UploadButton
+                                  endpoint="profilePicture"
+                                  onClientUploadComplete={(res) => {
+                                    fetchUser();
+                                  }}
+                                  onUploadError={(error: Error) => {
+                                    console.error(error);
+                                  }}
+                                  appearance={{
+                                    button: "h-10 w-10 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:scale-105 active:scale-95 transition-all border-4 border-background p-0",
+                                    allowedContent: "hidden",
+                                  }}
+                                  content={{
+                                    button: <Camera className="w-4 h-4" />
+                                  }}
+                                  headers={{
+                                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                  }}
+                                />
+                             )}
                           </div>
                         </div>
                         <div>
