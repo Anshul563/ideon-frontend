@@ -318,7 +318,7 @@ export default function ResultPage() {
     }
   };
 
-  const handleSwitchMode = async (mode: string) => {
+  const handleSwitchMode = async (mode: "full" | "stress" | "roast") => {
     if (data.mode === mode) return;
     setIsAnalyzing(true);
 
