@@ -324,7 +324,7 @@ export default function ResultPage() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/ideas/analyze",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/analyze`,
         { idea: data.idea, mode },
         {
           headers: {
