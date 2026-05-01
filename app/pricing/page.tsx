@@ -20,7 +20,7 @@ const plans = [
   },
   {
     name: "Monthly",
-    price: "199",
+    price: "1",
     period: "/month",
     description: "Advanced tools for growing ideas",
     features: ["Unlimited Analyses", "All Roast & Stress Modes", "Priority Support", "2x Faster Processing", "Ad-Free Experience"],
