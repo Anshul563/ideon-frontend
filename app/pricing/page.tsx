@@ -64,7 +64,7 @@ export default function Pricing() {
     setLoadingPlan(planId);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/create-order`,
         { amount, planId },
         {
           headers: {

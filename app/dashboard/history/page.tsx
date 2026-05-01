@@ -9,7 +9,7 @@ export default function History() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/dashboard/history", {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/dashboard/history`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

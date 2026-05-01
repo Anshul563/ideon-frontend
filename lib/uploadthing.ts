@@ -6,8 +6,8 @@ import {
 import type { OurFileRouter } from "../../ideon-backend/src/modules/upload/uploadthing";
 
 export const UploadButton = generateUploadButton<OurFileRouter>({
-  url: "http://localhost:5000/api/uploadthing",
+  url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uploadthing`,
 });
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>({
-  url: "http://localhost:5000/api/uploadthing",
+  url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uploadthing`,
 });

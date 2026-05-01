@@ -29,7 +29,7 @@ export default function ResultPage() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/ideas/${id}`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

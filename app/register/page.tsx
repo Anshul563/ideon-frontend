@@ -21,7 +21,7 @@ export default function Register() {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
         email,
         password,
         firstName,

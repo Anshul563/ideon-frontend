@@ -9,7 +9,7 @@ export default function Analytics() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/dashboard/analytics", {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/dashboard/analytics`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
