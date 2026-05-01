@@ -3,7 +3,10 @@ import {
   generateUploadDropzone,
 } from "@uploadthing/react";
 
-import type { OurFileRouter } from "../../ideon-backend/src/modules/upload/uploadthing";
+// Removed cross-directory import to fix build error
+export type OurFileRouter = {
+  profilePicture: any;
+};
 
 export const UploadButton = generateUploadButton<OurFileRouter>({
   url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uploadthing`,
