@@ -34,7 +34,7 @@ const navItems = [
   { name: "Market Analytics", href: "/dashboard/analytics", icon: BarChart3 },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, ...props }: { user?: any } & React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
   const handleLogout = () => {
@@ -96,15 +96,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter className="p-6">
         <div className="px-3 mb-4 group-data-[collapsible=icon]:hidden">
-          <div className="p-4 rounded-2xl bg-linear-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-500/20 shadow-sm mb-4">
-             <h4 className="text-xs font-black text-foreground uppercase tracking-tight mb-1">Upgrade to Pro</h4>
-             <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed font-medium">Get unlimited AI analyses and premium features.</p>
-             <Link href="/pricing">
-                <Button size="sm" className="w-full h-8 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 transition-all active:scale-95">
-                   Get Access
-                </Button>
-             </Link>
-          </div>
+          {(!user || user.plan === "free" || !user.plan) && (
+            <div className="p-4 rounded-2xl bg-linear-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-500/20 shadow-sm mb-4">
+               <h4 className="text-xs font-black text-foreground uppercase tracking-tight mb-1">Upgrade to Pro</h4>
+               <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed font-medium">Get unlimited AI analyses and premium features.</p>
+               <Link href="/pricing">
+                  <Button size="sm" className="w-full h-8 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 transition-all active:scale-95">
+                     Get Access
+                  </Button>
+               </Link>
+            </div>
+          )}
           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
             <div className="relative flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
