@@ -1,21 +1,68 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingDialog from "../../components/LoadingDialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ChevronRight, Activity, Loader2, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { Sparkles, ChevronRight, Activity, Loader2, CheckCircle2, AlertCircle, X, ShieldCheck, Zap } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function DashboardContent() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [verifiedData, setVerifiedData] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   
   const paymentStatus = searchParams.get("payment");
   const orderId = searchParams.get("order_id");
+
+  useEffect(() => {
+    if (paymentStatus === "success" && orderId) {
+      const verifyPayment = async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/verify`, 
+            { order_id: orderId },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          if (response.data.verified) {
+            setVerifiedData(response.data);
+            setIsDialogOpen(true);
+          }
+        } catch (err: any) {
+          console.error("Verification failed:", err.response?.data || err.message);
+        }
+      };
+
+      const timer = setTimeout(() => {
+        verifyPayment();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else if (paymentStatus === "failed") {
+      setIsDialogOpen(true);
+    }
+  }, [paymentStatus, orderId]);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    router.replace("/dashboard");
+  };
 
   const handleAnalyze = async (mode: "full" | "stress" | "roast" = "full") => {
     setLoading(true);
@@ -43,33 +90,62 @@ function DashboardContent() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000 max-w-5xl mx-auto pb-20">
       
-      {/* Payment Status Banners */}
-      {paymentStatus && showBanner && (
-        <div className={`p-6 rounded-[32px] border flex items-center justify-between gap-4 animate-in slide-in-from-top-4 duration-500 ${
-          paymentStatus === 'success' 
-            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-            : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-        }`}>
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-2xl ${paymentStatus === 'success' ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}>
-              {paymentStatus === 'success' ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-[32px] border-border bg-card/95 backdrop-blur-2xl">
+          <DialogHeader className="flex flex-col items-center pt-6">
+            <div className={`w-20 h-20 rounded-[28px] flex items-center justify-center mb-6 shadow-2xl animate-in zoom-in-50 duration-500 ${
+              paymentStatus === 'success' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'
+            }`}>
+              {paymentStatus === 'success' ? <ShieldCheck className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
             </div>
-            <div>
-              <h3 className="font-bold text-lg">
-                {paymentStatus === 'success' ? 'Payment Successful!' : 'Payment Failed'}
-              </h3>
-              <p className="text-sm opacity-80 font-medium">
-                {paymentStatus === 'success' 
-                  ? `Your account has been upgraded. Order ID: ${orderId}` 
-                  : 'Something went wrong with the transaction. Please try again.'}
-              </p>
+            <DialogTitle className="text-3xl font-black tracking-tight text-center">
+              {paymentStatus === 'success' ? 'Upgrade Successful!' : 'Payment Failed'}
+            </DialogTitle>
+            <DialogDescription className="text-center text-lg mt-2 font-medium">
+              {paymentStatus === 'success' 
+                ? 'Your premium access has been activated.' 
+                : 'There was an issue processing your transaction.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {paymentStatus === 'success' && verifiedData && (
+            <div className="space-y-4 py-6">
+              <div className="p-5 rounded-2xl bg-accent/30 border border-border flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Current Plan</p>
+                    <p className="font-bold capitalize text-foreground">{verifiedData.planId} Edition</p>
+                  </div>
+                </div>
+                <div className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">
+                  Active
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-accent/30 border border-border">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Order Identifier</p>
+                <p className="font-mono text-sm text-foreground/80 break-all">{verifiedData.orderId}</p>
+              </div>
             </div>
-          </div>
-          <button onClick={() => setShowBanner(false)} className="p-2 hover:bg-white/5 rounded-xl transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      )}
+          )}
+
+          <DialogFooter className="sm:justify-center pb-6">
+            <Button 
+              onClick={handleCloseDialog}
+              className={`w-full h-14 rounded-2xl text-lg font-bold shadow-xl transition-all active:scale-95 ${
+                paymentStatus === 'success' 
+                  ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/20' 
+                  : 'bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20'
+              }`}
+            >
+              Return to Dashboard
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
