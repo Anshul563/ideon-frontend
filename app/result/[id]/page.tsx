@@ -15,7 +15,8 @@ import {
   Loader2, 
   Flame, 
   BarChart4,
-  Skull
+  Skull,
+  ShieldCheck
 } from "lucide-react";
 import LoadingDialog from "../../../components/LoadingDialog";
 
@@ -337,7 +338,7 @@ export default function ResultPage() {
       setTimeout(() => {
         router.push(`/result/${res.data.id}`);
         setIsAnalyzing(false);
-      }, 3000);
+      }, 1000);
     } catch (error) {
       console.error("Switching mode failed:", error);
       setIsAnalyzing(false);
@@ -451,11 +452,16 @@ export default function ResultPage() {
 
         <div id="report-content" className="p-4 rounded-[40px]">
           <header className="mb-12">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <Sparkles className="w-3 h-3" />
                 AI Analysis Complete
               </div>
-              <div className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">
+              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <ShieldCheck className="w-3 h-3" />
+                Dual-Model Verified
+              </div>
+              <div className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider ml-1">
                 Generated on {new Date(data.createdAt).toLocaleDateString()}
               </div>
             </div>

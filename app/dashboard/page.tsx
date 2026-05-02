@@ -17,6 +17,10 @@ import {
 
 function DashboardContent() {
   const [idea, setIdea] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [geographicScope, setGeographicScope] = useState("Global");
+  const [businessModel, setBusinessModel] = useState("");
+  const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const [verifiedData, setVerifiedData] = useState<any>(null);
@@ -70,7 +74,14 @@ function DashboardContent() {
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/analyze`,
-        { idea, mode },
+        { 
+          idea, 
+          mode,
+          targetAudience,
+          geographicScope,
+          businessModel,
+          budget
+        },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -80,7 +91,7 @@ function DashboardContent() {
 
       setTimeout(() => {
         router.push(`/result/${res.data.id}`);
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.error("Analysis failed:", error);
       setLoading(false);
@@ -170,14 +181,89 @@ function DashboardContent() {
             </h3>
           </div>
 
-          <textarea
-            className="w-full min-h-[200px] p-8 bg-background/60 border border-border rounded-3xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-xl resize-none mb-8 leading-relaxed font-medium text-foreground"
-            placeholder="Describe your SaaS idea in detail..."
-            value={idea}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIdea(e.target.value)}
-          />
+          <div className="space-y-6">
+            <textarea
+              className="w-full min-h-[200px] p-8 bg-background/60 border border-border rounded-3xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-xl resize-none mb-2 leading-relaxed font-medium text-foreground"
+              placeholder="Describe your SaaS idea in detail..."
+              value={idea}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIdea(e.target.value)}
+            />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2">
+                  Target Audience
+                </label>
+                <select
+                  value={targetAudience}
+                  onChange={(e) => setTargetAudience(e.target.value)}
+                  className="w-full h-12 px-4 bg-background/60 border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 text-foreground font-bold appearance-none cursor-pointer text-sm"
+                >
+                  <option value="" className="bg-card">Select Customers...</option>
+                  <option value="b2b" className="bg-card">B2B / Enterprises</option>
+                  <option value="b2c" className="bg-card">B2C / General Consumers</option>
+                  <option value="developers" className="bg-card">Developers / Technical Users</option>
+                  <option value="creators" className="bg-card">Creators / Influencers</option>
+                  <option value="small-business" className="bg-card">Small Business Owners</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2">
+                  Geographic Scope
+                </label>
+                <select
+                  value={geographicScope}
+                  onChange={(e) => setGeographicScope(e.target.value)}
+                  className="w-full h-12 px-4 bg-background/60 border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 text-foreground font-bold appearance-none cursor-pointer text-sm"
+                >
+                  <option value="Global" className="bg-card">Global Market</option>
+                  <option value="USA" className="bg-card">USA / North America</option>
+                  <option value="Europe" className="bg-card">Europe</option>
+                  <option value="India" className="bg-card">India / Asia</option>
+                  <option value="UK" className="bg-card">United Kingdom</option>
+                  <option value="MENA" className="bg-card">Middle East / North Africa</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2">
+                  Business Model
+                </label>
+                <select
+                  value={businessModel}
+                  onChange={(e) => setBusinessModel(e.target.value)}
+                  className="w-full h-12 px-4 bg-background/60 border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 text-foreground font-bold appearance-none cursor-pointer text-sm"
+                >
+                  <option value="" className="bg-card">Select Model...</option>
+                  <option value="subscription" className="bg-card">SaaS / Subscription</option>
+                  <option value="freemium" className="bg-card">Freemium</option>
+                  <option value="one-time" className="bg-card">One-time Purchase</option>
+                  <option value="ads" className="bg-card">Ad-supported</option>
+                  <option value="marketplace" className="bg-card">Marketplace / Commission</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-2">
+                  Est. Budget
+                </label>
+                <select
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="w-full h-12 px-4 bg-background/60 border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary/50 text-foreground font-bold appearance-none cursor-pointer text-sm"
+                >
+                  <option value="" className="bg-card">Select Budget...</option>
+                  <option value="under-1k" className="bg-card">Under $1k</option>
+                  <option value="1k-10k" className="bg-card">$1k - $10k</option>
+                  <option value="10k-50k" className="bg-card">$10k - $50k</option>
+                  <option value="50k-plus" className="bg-card">$50k+</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-8">
             <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />

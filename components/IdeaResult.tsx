@@ -34,6 +34,12 @@ export default function IdeaResult({ data }: { data: any }) {
     return "bg-destructive";
   };
 
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
       
@@ -84,29 +90,31 @@ export default function IdeaResult({ data }: { data: any }) {
             </h3>
 
             {/* Radar Chart Integration */}
-            <div className="w-full h-[220px] mb-6">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
-                  <PolarGrid stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1} />
-                  <PolarAngleAxis 
-                    dataKey="subject" 
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 8, fontWeight: 700 }}
-                  />
-                  <PolarRadiusAxis 
-                    angle={30} 
-                    domain={[0, 10]} 
-                    tick={false}
-                    axisLine={false}
-                  />
-                  <Radar
-                    name="Score"
-                    dataKey="A"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.4}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="w-full h-[220px] mb-6 min-w-0">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
+                    <PolarGrid stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1} />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 8, fontWeight: 700 }}
+                    />
+                    <PolarRadiusAxis 
+                      angle={30} 
+                      domain={[0, 10]} 
+                      tick={false}
+                      axisLine={false}
+                    />
+                    <Radar
+                      name="Score"
+                      dataKey="A"
+                      stroke="hsl(var(--primary))"
+                      fill="hsl(var(--primary))"
+                      fillOpacity={0.4}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              )}
             </div>
 
             <div className="space-y-4">
