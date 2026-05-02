@@ -141,8 +141,23 @@ function DashboardLayoutContent({ children }: any) {
                              {mounted && (
                                <UploadButton
                                   endpoint="profilePicture"
-                                  onClientUploadComplete={(res) => {
-                                    fetchUser();
+                                  onClientUploadComplete={async (res) => {
+                                    if (res && res[0]) {
+                                      try {
+                                        await axios.post(
+                                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/update-profile-pic`,
+                                          { url: res[0].url },
+                                          {
+                                            headers: {
+                                              Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                            },
+                                          }
+                                        );
+                                        fetchUser();
+                                      } catch (err) {
+                                        console.error("Failed to update profile pic manually:", err);
+                                      }
+                                    }
                                   }}
                                   onUploadError={(error: Error) => {
                                     console.error(error);
