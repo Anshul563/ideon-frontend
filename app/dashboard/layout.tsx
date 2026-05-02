@@ -106,9 +106,19 @@ function DashboardLayoutContent({ children }: any) {
                         <span className="text-xs font-bold leading-none group-hover:text-primary transition-colors">
                           {user ? `${user.firstName} ${user.lastName || ""}` : "Guest User"}
                         </span>
-                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                          {user?.plan || "Free"} Plan
-                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                            {user?.plan || "Free"} Plan
+                          </span>
+                          {user?.plan === "free" && (
+                            <>
+                              <span className="text-[10px] text-muted-foreground/30">•</span>
+                              <span className="text-[10px] text-primary font-bold uppercase tracking-wider bg-primary/10 px-1.5 rounded-sm">
+                                {user?.tokensLeft ?? 0} Tokens Left
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div className="h-9 w-9 rounded-xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/20 shadow-sm group-hover:border-primary/50 transition-all overflow-hidden">
                         {user?.profilePic ? (

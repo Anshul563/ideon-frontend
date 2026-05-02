@@ -6,95 +6,117 @@ import { BarChart3, TrendingUp, Activity, PieChart, Layers } from "lucide-react"
 
 export default function Analytics() {
   const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/dashboard/analytics`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/analytics`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
-      .then((res) => setData(res.data));
+      .then((res) => {
+        setData(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
-  if (!data) return (
+  if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <div className="w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
+  if (!data || data.total === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-muted flex items-center justify-center border border-border">
+          <BarChart3 className="w-10 h-10 text-muted-foreground" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold tracking-tight">No analytics data yet</h2>
+          <p className="text-muted-foreground max-w-sm mx-auto font-medium">Analyze at least one idea to see your portfolio metrics and scoring distributions.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000 pb-20">
-      <header>
-        <div className="flex items-center gap-2 mb-2">
-          <div className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest border border-indigo-500/20">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
+      <header className="space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
             Insights Dashboard
           </div>
         </div>
-        <h1 className="text-5xl font-black tracking-tighter text-white">Market Analytics</h1>
-        <p className="text-slate-400 mt-2 text-lg">Aggregated data and scoring distributions across all your projects</p>
+        <h1 className="text-4xl font-black tracking-tight text-foreground">Market Analytics</h1>
+        <p className="text-muted-foreground text-lg font-medium">Aggregated data and scoring distributions across all your projects</p>
       </header>
 
-      <div className="grid md:grid-cols-3 gap-10">
+      <div className="grid md:grid-cols-3 gap-6">
         {/* Total Ideas */}
-        <div className="backdrop-blur-xl bg-slate-900/40 p-10 rounded-[48px] border border-white/5 relative overflow-hidden group shadow-2xl">
-          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Layers className="w-24 h-24 text-indigo-500" />
+        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+          <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+            <Layers className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
               <Layers className="w-5 h-5" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total Concepts</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Total Concepts</p>
           </div>
-          <h2 className="text-6xl font-black text-white tracking-tighter">{data.total}</h2>
-          <div className="mt-6 flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1.5 rounded-xl w-fit border border-emerald-500/20">
+          <h2 className="text-5xl font-black text-foreground tracking-tighter">{data.total}</h2>
+          <div className="mt-6 flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-wider bg-primary/10 px-3 py-1.5 rounded-lg w-fit border border-primary/20">
             <TrendingUp className="w-3.5 h-3.5" /> 
             Active Portfolio
           </div>
         </div>
 
         {/* Avg Score */}
-        <div className="backdrop-blur-xl bg-slate-900/40 p-10 rounded-[48px] border border-white/5 relative overflow-hidden group shadow-2xl">
-          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Activity className="w-24 h-24 text-violet-500" />
+        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+          <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+            <Activity className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400">
+            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
               <Activity className="w-5 h-5" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Average Score</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Average Score</p>
           </div>
           <div className="flex items-baseline gap-1">
-            <h2 className="text-6xl font-black text-white tracking-tighter">{data.avgScore}</h2>
-            <span className="text-2xl text-slate-700 font-bold">/10</span>
+            <h2 className="text-5xl font-black text-foreground tracking-tighter">{data.avgScore}</h2>
+            <span className="text-xl text-muted-foreground font-bold">/10</span>
           </div>
-          <p className="mt-6 text-sm text-slate-400 leading-relaxed font-medium">Across all validated business models</p>
+          <p className="mt-6 text-xs text-muted-foreground leading-relaxed font-bold uppercase tracking-wide">Strategic Quality Baseline</p>
         </div>
 
         {/* Verdict Distribution */}
-        <div className="backdrop-blur-xl bg-slate-900/40 p-10 rounded-[48px] border border-white/5 relative overflow-hidden group shadow-2xl">
-          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-            <PieChart className="w-24 h-24 text-emerald-500" />
+        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+          <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+            <PieChart className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
               <PieChart className="w-5 h-5" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Verdict Spread</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Verdict Spread</p>
           </div>
-          <div className="space-y-5">
+          <div className="space-y-4">
             {data.verdicts.map((v: any, i: number) => (
               <div key={i} className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-300">{v.verdict}</span>
+                <span className="text-xs font-bold text-foreground/70 uppercase tracking-tight">{v.verdict}</span>
                 <div className="flex items-center gap-4">
-                  <div className="w-24 h-2 bg-slate-950/50 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-20 h-1.5 bg-accent rounded-full overflow-hidden border border-border">
                     <div 
-                      className="h-full bg-indigo-500 rounded-full shadow-sm" 
+                      className="h-full bg-primary rounded-full shadow-sm" 
                       style={{ width: `${(v.count / data.total) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm font-black text-white min-w-[12px]">{v.count}</span>
+                  <span className="text-xs font-black text-foreground min-w-[12px]">{v.count}</span>
                 </div>
               </div>
             ))}
@@ -102,18 +124,26 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* Placeholder Chart Section */}
-      <div className="backdrop-blur-xl bg-slate-900/40 p-20 rounded-[64px] border border-white/5 relative overflow-hidden shadow-2xl flex flex-col items-center justify-center group">
-        <div className="absolute inset-0 bg-linear-to-b from-transparent to-indigo-500/5 group-hover:to-indigo-500/10 transition-all" />
-        <div className="text-center relative z-10">
-          <div className="w-20 h-20 rounded-[32px] bg-slate-950/60 border border-white/5 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:scale-110 transition-transform">
-            <BarChart3 className="w-10 h-10 text-indigo-400" />
+      {/* Deep Intelligence Section */}
+      <div className="bg-card p-12 rounded-[48px] border border-border relative overflow-hidden flex flex-col items-center justify-center group text-center">
+        <div className="absolute inset-0 bg-primary/2 group-hover:bg-primary/4 transition-all" />
+        <div className="relative z-10 space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-accent border border-border flex items-center justify-center mx-auto shadow-sm group-hover:scale-105 transition-transform">
+            <BarChart3 className="w-8 h-8 text-primary/50" />
           </div>
-          <h3 className="text-2xl font-black text-white tracking-tight mb-2">Deep Intelligence Coming Soon</h3>
-          <p className="text-slate-500 font-medium text-lg">Detailed trend analysis and scoring charts are being processed</p>
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-foreground tracking-tight">Market Intelligence V2</h3>
+            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">
+              Our advanced trend analysis engine is currently indexing global market shifts. 
+              Real-time scoring charts will be available in the next release.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-4 pt-4">
+             <div className="px-3 py-1 rounded-full bg-accent text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Indexing...</div>
+             <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">Beta Access Enabled</div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
