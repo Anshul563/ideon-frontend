@@ -1,6 +1,6 @@
 import React from "react";
-import { 
-  Trophy, TrendingUp, AlertTriangle, Lightbulb, 
+import {
+  Trophy, TrendingUp, Lightbulb,
   Target, Users, Zap, Briefcase, Activity, ShieldAlert,
   ArrowUpRight, CheckCircle2
 } from "lucide-react";
@@ -8,14 +8,22 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, 
   PolarRadiusAxis, ResponsiveContainer 
 } from 'recharts';
+import type { AnalysisResult, BetterVersion, Competitor, Improvement } from "@/lib/types";
 
-export default function IdeaResult({ data }: { data: any }) {
+export default function IdeaResult({ data }: { data: AnalysisResult | null }) {
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = window.setTimeout(() => setIsMounted(true), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   if (!data) return null;
 
   // Chart data formatting
   const chartData = Object.entries(data.scoring?.scores || {})
     .filter(([key]) => key !== "overall")
-    .map(([key, value]: any) => ({
+    .map(([key, value]) => ({
       subject: key.charAt(0).toUpperCase() + key.slice(1),
       A: value,
       fullMark: 10,
@@ -33,12 +41,7 @@ export default function IdeaResult({ data }: { data: any }) {
     if (score >= 5) return "bg-muted-foreground";
     return "bg-destructive";
   };
-
-  const [isMounted, setIsMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const overallScore = data.scoring?.scores?.overall ?? 0;
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
@@ -62,8 +65,8 @@ export default function IdeaResult({ data }: { data: any }) {
           <div className="flex flex-col items-center gap-2 shrink-0 bg-background/40 backdrop-blur-2xl p-6 rounded-[32px] border border-border min-w-[160px]">
             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Overall Verdict</span>
             <div className="flex items-baseline gap-1">
-              <span className={`text-5xl font-black tracking-tighter ${getScoreColor(data.scoring?.scores?.overall)}`}>
-                {data.scoring?.scores?.overall}
+              <span className={`text-5xl font-black tracking-tighter ${getScoreColor(overallScore)}`}>
+                {overallScore}
               </span>
               <span className="text-xl text-muted-foreground/30 font-bold">/10</span>
             </div>
@@ -120,7 +123,7 @@ export default function IdeaResult({ data }: { data: any }) {
             <div className="space-y-4">
               {Object.entries(data.scoring?.scores || {})
                 .filter(([key]) => key !== "overall")
-                .map(([key, value]: any) => (
+                .map(([key, value]) => (
                 <div key={key} className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                     <span className="text-muted-foreground">{key}</span>
@@ -184,14 +187,14 @@ export default function IdeaResult({ data }: { data: any }) {
               <Briefcase className="w-5 h-5 text-primary" /> Competitive Landscape
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {data.competitors?.map((comp: any, i: number) => (
+              {data.competitors?.map((comp: Competitor, i: number) => (
                 <div key={i} className="p-5 rounded-[24px] bg-background/40 border border-border hover:border-primary/20 transition-all hover:-translate-y-1 flex flex-col h-full group">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center overflow-hidden shrink-0 group-hover:border-primary/20 transition-all">
                       {comp.website ? (
                         <img 
                           src={`https://logo.clearbit.com/${comp.website}`} 
-                          alt={comp.name}
+                          alt={comp.name ?? "Competitor logo"}
                           className="w-6 h-6 object-contain"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${comp.website}&sz=64`;
@@ -212,7 +215,7 @@ export default function IdeaResult({ data }: { data: any }) {
                   <div className="pt-4 border-t border-border/50">
                     <span className="text-[8px] uppercase tracking-[0.2em] text-destructive font-black block mb-1">Vulnerability</span>
                     <p className="text-[10px] text-destructive/80 leading-relaxed font-semibold line-clamp-2 italic">
-                      "{comp.weakness}"
+                      &quot;{comp.weakness}&quot;
                     </p>
                   </div>
                 </div>
@@ -228,7 +231,7 @@ export default function IdeaResult({ data }: { data: any }) {
                 <Zap className="w-5 h-5 text-primary" /> Essential Features
               </h3>
               <div className="space-y-4">
-                {data.improvements?.improvements?.slice(0, 3).map((imp: any, i: number) => (
+                {data.improvements?.improvements?.slice(0, 3).map((imp: Improvement, i: number) => (
                   <div key={i} className="flex gap-3 items-start p-3 rounded-2xl hover:bg-accent/30 transition-all group border border-transparent hover:border-border">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
@@ -246,7 +249,7 @@ export default function IdeaResult({ data }: { data: any }) {
                 <Lightbulb className="w-5 h-5 text-primary" /> Strategy Tiers
               </h3>
               <div className="space-y-4">
-                {data.improvements?.better_versions?.slice(0, 2).map((ver: any, i: number) => (
+                {data.improvements?.better_versions?.slice(0, 2).map((ver: BetterVersion, i: number) => (
                   <div key={i} className="p-4 rounded-2xl bg-background/40 border border-primary/5 hover:border-primary/20 transition-all">
                     <h4 className="font-bold text-primary mb-2 flex items-center justify-between text-xs">
                       {ver.name}
@@ -264,4 +267,3 @@ export default function IdeaResult({ data }: { data: any }) {
     </div>
   );
 }
-

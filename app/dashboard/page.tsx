@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingDialog from "../../components/LoadingDialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ChevronRight, Activity, Loader2, CheckCircle2, AlertCircle, X, ShieldCheck, Zap } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, ShieldCheck, Zap } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { PaymentVerification } from "@/lib/types";
 
 function DashboardContent() {
   const [idea, setIdea] = useState("");
@@ -22,8 +23,7 @@ function DashboardContent() {
   const [businessModel, setBusinessModel] = useState("");
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
-  const [verifiedData, setVerifiedData] = useState<any>(null);
+  const [verifiedData, setVerifiedData] = useState<PaymentVerification | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,8 +48,9 @@ function DashboardContent() {
             setVerifiedData(response.data);
             setIsDialogOpen(true);
           }
-        } catch (err: any) {
-          console.error("Verification failed:", err.response?.data || err.message);
+        } catch (err) {
+          const message = axios.isAxiosError(err) ? err.response?.data || err.message : err;
+          console.error("Verification failed:", message);
         }
       };
 
@@ -59,7 +60,8 @@ function DashboardContent() {
 
       return () => clearTimeout(timer);
     } else if (paymentStatus === "failed") {
-      setIsDialogOpen(true);
+      const timer = window.setTimeout(() => setIsDialogOpen(true), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [paymentStatus, orderId]);
 

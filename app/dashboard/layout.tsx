@@ -26,8 +26,9 @@ import {
 } from "@/components/ui/dialog";
 import { Search, Bell, User, Mail, Shield, Calendar, MapPin, Camera } from "lucide-react";
 import { UploadButton } from "@/lib/uploadthing";
+import type { UserProfile } from "@/lib/types";
 
-export default function DashboardLayout({ children }: any) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-background text-muted-foreground">Loading...</div>}>
       <DashboardLayoutContent>{children}</DashboardLayoutContent>
@@ -35,8 +36,8 @@ export default function DashboardLayout({ children }: any) {
   );
 }
 
-function DashboardLayoutContent({ children }: any) {
-  const [user, setUser] = useState<any>(null);
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const paymentStatus = searchParams.get("payment");
@@ -55,8 +56,9 @@ function DashboardLayoutContent({ children }: any) {
   };
 
   useEffect(() => {
+    const timer = window.setTimeout(() => setMounted(true), 0);
     fetchUser();
-    setMounted(true);
+    return () => window.clearTimeout(timer);
   }, [paymentStatus]);
 
   return (
@@ -248,4 +250,4 @@ function DashboardLayoutContent({ children }: any) {
     </SidebarProvider>
   );
 }
-
+

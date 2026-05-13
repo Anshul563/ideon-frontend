@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BarChart3, TrendingUp, Activity, PieChart, Layers } from "lucide-react";
+import type { AnalyticsData } from "@/lib/types";
 
 export default function Analytics() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,7 +107,7 @@ export default function Analytics() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Verdict Spread</p>
           </div>
           <div className="space-y-4">
-            {data.verdicts.map((v: any, i: number) => (
+            {data.verdicts.map((v, i) => (
               <div key={i} className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground/70 uppercase tracking-tight">{v.verdict}</span>
                 <div className="flex items-center gap-4">

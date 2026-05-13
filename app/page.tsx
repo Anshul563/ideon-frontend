@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useLayoutEffect } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import {
   Brain,
   Target,
   TrendingUp,
   Zap,
   CheckCircle2,
-  Rocket,
   ArrowRight,
   MousePointerClick,
   Search,
@@ -23,6 +21,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import type { LucideIcon } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,7 +54,7 @@ export default function Home() {
 
       // Scroll-based parallax for hero background
       gsap.to(".hero-bg", {
-        y: (_i) => -ScrollTrigger.maxScroll(window) * 0.1,
+        y: () => -ScrollTrigger.maxScroll(window) * 0.1,
         ease: "none",
         scrollTrigger: {
           start: "top top",
@@ -81,8 +80,8 @@ export default function Home() {
       );
 
       // Fade and scale sections on scroll
-      gsap.utils.toArray(".reveal").forEach((elem: any) => {
-        gsap.fromTo(
+      gsap.utils.toArray<HTMLElement>(".reveal").forEach((elem) => {
+        return gsap.fromTo(
           elem,
           { opacity: 0, y: 50 },
           {
@@ -95,7 +94,7 @@ export default function Home() {
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          },
+          }
         );
       });
     },
@@ -357,7 +356,18 @@ export default function Home() {
   );
 }
 
-function TimelineItem({ step, index }: { step: any; index: number }) {
+type TimelineStep = {
+  num: string;
+  title: string;
+  desc: string;
+  icon: LucideIcon;
+  gradient: string;
+  borderColor: string;
+  dotColor: string;
+  accentColor: string;
+};
+
+function TimelineItem({ step, index }: { step: TimelineStep; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10%" });
   const Icon = step.icon;

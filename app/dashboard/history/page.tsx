@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { History as HistoryIcon, Calendar, ArrowRight, Lightbulb } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { IdeaRecord } from "@/lib/types";
 
 export default function History() {
-  const [ideas, setIdeas] = useState<any[]>([]);
+  const [ideas, setIdeas] = useState<IdeaRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -64,7 +65,9 @@ export default function History() {
                   <div className="flex items-center gap-3 mt-1.5 text-muted-foreground">
                     <Calendar className="w-3.5 h-3.5" />
                     <p className="text-[11px] font-bold uppercase tracking-wider">
-                      {new Date(item.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                      {item.createdAt
+                        ? new Date(item.createdAt).toLocaleDateString(undefined, { dateStyle: "medium" })
+                        : "Unknown date"}
                     </p>
                     <span className="text-muted-foreground/30">•</span>
                     <span className="text-[10px] font-black uppercase tracking-widest bg-secondary px-2 py-0.5 rounded-md">
@@ -106,4 +109,4 @@ export default function History() {
     </div>
   );
 }
-
+

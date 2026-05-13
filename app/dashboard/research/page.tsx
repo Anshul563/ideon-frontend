@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, TrendingUp, ExternalLink, Globe, Zap, ArrowRight, Filter, Briefcase, Users } from "lucide-react";
+import { ExternalLink, Globe, Zap, ArrowRight, Filter, Briefcase, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { TrendItem } from "@/lib/types";
 
 export default function MarketResearch() {
-  const [trends, setTrends] = useState<any[]>([]);
+  const [trends, setTrends] = useState<TrendItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [industry, setIndustry] = useState("");
   const [audience, setAudience] = useState("");
@@ -31,6 +32,7 @@ export default function MarketResearch() {
 
   useEffect(() => {
     fetchTrends();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

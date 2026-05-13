@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ArrowRight, Brain, Sparkles, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowRight, Brain, ShieldCheck } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -26,8 +26,19 @@ export default function Login() {
       });
 
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       document.cookie = `token=${res.data.token}; path=/`;
-      router.push("/dashboard");
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect");
+
+      if (res.data.user.role === "admin") {
+        router.push("/admin");
+      } else if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed", error);
     } finally {

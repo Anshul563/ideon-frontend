@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { 
+import {
   Skull, 
   Flame, 
   Ghost,
@@ -9,8 +9,9 @@ import {
   Laugh,
   Ban
 } from "lucide-react";
+import type { AnalysisResult, RoastItem } from "@/lib/types";
 
-export default function RoastResult({ data }: { data: any }) {
+export default function RoastResult({ data }: { data: AnalysisResult | null }) {
   if (!data) return null;
 
   // Handle both old nested and new flat structures
@@ -30,7 +31,7 @@ export default function RoastResult({ data }: { data: any }) {
             <Skull className="w-4 h-4" /> Roast Mode Active
           </div>
           <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-[1.2] max-w-3xl italic">
-            "{result.the_burn}"
+            &quot;{result.the_burn}&quot;
           </h2>
           <div className="flex gap-4">
              <div className="p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20 animate-bounce">
@@ -47,7 +48,7 @@ export default function RoastResult({ data }: { data: any }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {result.roasts?.map((roast: any, i: number) => (
+        {result.roasts?.map((roast: RoastItem, i: number) => (
           <div key={i} className="group relative">
             <div className="absolute inset-0 bg-linear-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]" />
             <div className="relative p-8 rounded-[32px] bg-card/40 border border-border shadow-lg transition-all group-hover:-translate-y-2 group-hover:border-orange-500/30">
@@ -61,7 +62,7 @@ export default function RoastResult({ data }: { data: any }) {
                 </div>
               </div>
               <p className="text-muted-foreground font-medium italic leading-relaxed text-lg">
-                "{roast.comment}"
+                &quot;{roast.comment}&quot;
               </p>
             </div>
           </div>

@@ -19,11 +19,19 @@ import {
   ShieldCheck
 } from "lucide-react";
 import LoadingDialog from "../../../components/LoadingDialog";
+import type {
+  BetterVersion,
+  Competitor,
+  IdeaRecord,
+  Improvement,
+  RiskItem,
+  RoastItem,
+} from "@/lib/types";
 
 export default function ResultPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<IdeaRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -196,14 +204,14 @@ export default function ResultPage() {
         // Competitors
         if (data.result?.competitors?.length) {
           drawSection("Competitive Landscape");
-          data.result.competitors.forEach((c: any, i: number) => {
+          data.result.competitors.forEach((c: Competitor, i: number) => {
             checkNewPage(18);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(248, 250, 252);
             pdf.text(`${i + 1}. ${c.name}${c.website ? "  ·  " + c.website : ""}`, MARGIN, y);
             y += 5;
-            drawText(c.description, 8.5);
+            drawText(c.description ?? "", 8.5);
             if (c.weakness) {
               pdf.setFontSize(8);
               pdf.setFont("helvetica", "italic");
@@ -219,7 +227,7 @@ export default function ResultPage() {
         // Features
         if (data.result?.improvements?.improvements?.length) {
           drawSection("Essential Features");
-          data.result.improvements.improvements.forEach((imp: any) => {
+          data.result.improvements.improvements.forEach((imp: Improvement) => {
             checkNewPage(12);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
@@ -233,7 +241,7 @@ export default function ResultPage() {
         // Strategy
         if (data.result?.improvements?.better_versions?.length) {
           drawSection("Strategy Tiers");
-          data.result.improvements.better_versions.forEach((ver: any) => {
+          data.result.improvements.better_versions.forEach((ver: BetterVersion) => {
             checkNewPage(12);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
@@ -251,24 +259,24 @@ export default function ResultPage() {
         const result = data.result;
         if (result?.failure_reasons?.length) {
           drawSection("Failure Reasons");
-          result.failure_reasons.forEach((r: any) => {
+          result.failure_reasons.forEach((r: RiskItem) => {
             checkNewPage(14);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(248, 113, 113);
             pdf.text(`✗ ${r.title}`, MARGIN, y); y += 5;
-            drawText(r.description, 8.5);
+            drawText(r.description ?? "", 8.5);
           });
         }
         if (result?.market_risks?.length) {
           drawSection("Market Risks");
-          result.market_risks.forEach((r: any) => {
+          result.market_risks.forEach((r: RiskItem) => {
             checkNewPage(14);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(251, 146, 60);
             pdf.text(`⚠ ${r.title}`, MARGIN, y); y += 5;
-            drawText(r.description, 8.5);
+            drawText(r.description ?? "", 8.5);
           });
         }
         if (result?.brutal_verdict) {
@@ -282,13 +290,13 @@ export default function ResultPage() {
         const result = data.result;
         if (result?.roasts?.length) {
           drawSection("The Roast");
-          result.roasts.forEach((r: any) => {
+          result.roasts.forEach((r: RoastItem) => {
             checkNewPage(16);
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "bold");
             pdf.setTextColor(251, 146, 60);
             pdf.text(`🔥 ${r.point}`, MARGIN, y); y += 5;
-            drawText(r.comment, 8.5);
+            drawText(r.comment ?? "", 8.5);
             y += 2;
           });
         }
@@ -299,7 +307,7 @@ export default function ResultPage() {
       }
 
       // ── Footer on every page ─────────────────────────────────────────────────
-      const totalPages = (pdf as any).internal.getNumberOfPages();
+      const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         pdf.setFillColor(15, 23, 42);
@@ -320,7 +328,7 @@ export default function ResultPage() {
   };
 
   const handleSwitchMode = async (mode: "full" | "stress" | "roast") => {
-    if (data.mode === mode) return;
+    if (!data || data.mode === mode) return;
     setIsAnalyzing(true);
 
     try {
@@ -360,7 +368,7 @@ export default function ResultPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
         <h2 className="text-2xl font-bold text-foreground mb-2">Result not found</h2>
-        <p className="text-muted-foreground mb-8">We couldn't find the analysis you're looking for.</p>
+        <p className="text-muted-foreground mb-8">We couldn&apos;t find the analysis you&apos;re looking for.</p>
         <Button
           variant="outline"
           onClick={() => router.push("/dashboard")}
@@ -484,11 +492,11 @@ export default function ResultPage() {
 
           <div className="animate-in slide-in-from-bottom-8 duration-1000">
             {data.mode === "stress" ? (
-              <StressResult data={data.result} />
+              <StressResult data={data.result ?? null} />
             ) : data.mode === "roast" ? (
-              <RoastResult data={data.result} />
+              <RoastResult data={data.result ?? null} />
             ) : (
-              <IdeaResult data={data.result} />
+              <IdeaResult data={data.result ?? null} />
             )}
           </div>
           

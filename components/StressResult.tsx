@@ -10,8 +10,9 @@ import {
   Skull,
   ZapOff
 } from "lucide-react";
+import type { AnalysisResult, RiskItem } from "@/lib/types";
 
-export default function StressResult({ data }: { data: any }) {
+export default function StressResult({ data }: { data: AnalysisResult | null }) {
   if (!data) return null;
 
   // Handle both old nested and new flat structures
@@ -31,7 +32,7 @@ export default function StressResult({ data }: { data: any }) {
             <Flame className="w-4 h-4" /> Brutal Reality Check
           </div>
           <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground leading-[1.1] max-w-4xl">
-            "{result.brutal_verdict}"
+            &quot;{result.brutal_verdict}&quot;
           </h2>
         </div>
       </div>
@@ -46,7 +47,7 @@ export default function StressResult({ data }: { data: any }) {
             <h3 className="text-xl font-bold text-foreground">Why it will fail</h3>
           </div>
           <div className="space-y-4">
-            {result.failure_reasons?.map((reason: any, i: number) => (
+            {result.failure_reasons?.map((reason: RiskItem, i: number) => (
               <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-destructive/30 transition-all">
                 <div className="flex items-start gap-4">
                   <XCircle className="w-6 h-6 text-destructive shrink-0 mt-1" />
@@ -69,7 +70,7 @@ export default function StressResult({ data }: { data: any }) {
             <h3 className="text-xl font-bold text-foreground">Market Risks</h3>
           </div>
           <div className="space-y-4">
-            {result.market_risks?.map((risk: any, i: number) => (
+            {result.market_risks?.map((risk: RiskItem, i: number) => (
               <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-orange-500/30 transition-all">
                 <div className="flex items-start gap-4">
                   <AlertTriangle className="w-6 h-6 text-orange-500 shrink-0 mt-1" />
@@ -92,7 +93,7 @@ export default function StressResult({ data }: { data: any }) {
             <h3 className="text-xl font-bold text-foreground">Execution Challenges</h3>
           </div>
           <div className="space-y-4">
-            {result.execution_challenges?.map((challenge: any, i: number) => (
+            {result.execution_challenges?.map((challenge: RiskItem, i: number) => (
               <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-foreground/30 transition-all">
                 <div className="flex items-start gap-4">
                   <ShieldAlert className="w-6 h-6 text-muted-foreground shrink-0 mt-1" />
