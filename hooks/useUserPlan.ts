@@ -13,7 +13,7 @@ export function useUserPlan() {
           setLoading(false);
           return;
         }
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/profile`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPlan(res.data.plan || "free");

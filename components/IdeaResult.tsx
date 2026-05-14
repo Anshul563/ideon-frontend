@@ -93,9 +93,9 @@ export default function IdeaResult({ data }: { data: AnalysisResult | null }) {
             </h3>
 
             {/* Radar Chart Integration */}
-            <div className="w-full h-[220px] mb-6 min-w-0">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="w-full h-[220px] mb-6 min-w-0 flex items-center justify-center">
+              {isMounted && chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
                     <PolarGrid stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1} />
                     <PolarAngleAxis 
@@ -117,6 +117,8 @@ export default function IdeaResult({ data }: { data: AnalysisResult | null }) {
                     />
                   </RadarChart>
                 </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full bg-muted/20 animate-pulse rounded-xl" />
               )}
             </div>
 

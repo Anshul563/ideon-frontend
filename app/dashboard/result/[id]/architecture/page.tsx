@@ -214,7 +214,11 @@ export default function ArchitecturePage() {
             const styledNodes = nodesData.map((n: any) => ({
               ...n,
               type: "custom",
-              data: { ...n.data, category: n.data.category || "backend" },
+              data: { 
+                ...(n.data || {}), 
+                category: n.data?.category || "backend",
+                label: n.data?.label || n.id
+              },
             }));
 
             const styledEdges = (edgesData || []).map((e: any) => ({
