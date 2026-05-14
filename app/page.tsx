@@ -10,11 +10,15 @@ import {
   Zap,
   CheckCircle2,
   ArrowRight,
-  MousePointerClick,
   Search,
   BarChart3,
   ShieldCheck,
   Sparkles,
+  Flame,
+  Activity,
+  History,
+  Lock,
+  ChevronRight,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,332 +27,423 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import type { LucideIcon } from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      // Hero Text Animation
+      // Hero Animation
       const tl = gsap.timeline();
-      tl.from(".hero-title span", {
+      tl.from(".hero-line", {
+        width: 0,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power4.inOut",
+        stagger: 0.2,
+      }).from(".hero-text span", {
         y: 100,
         opacity: 0,
         duration: 1,
-        stagger: 0.2,
+        stagger: 0.1,
         ease: "power4.out",
-      }).from(
-        ".hero-sub",
-        {
-          y: 20,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power3.out",
-        },
-        "-=0.5",
-      );
+      }, "-=1");
 
-      // Scroll-based parallax for hero background
-      gsap.to(".hero-bg", {
-        y: () => -ScrollTrigger.maxScroll(window) * 0.1,
-        ease: "none",
+      // Background parallax
+      gsap.to(".bg-grid", {
+        y: -100,
         scrollTrigger: {
+          trigger: containerRef.current,
           start: "top top",
-          end: "bottom top",
+          end: "bottom bottom",
           scrub: true,
         },
       });
 
-      // Timeline Progress Line
-      gsap.fromTo(
-        lineRef.current,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: timelineRef.current,
-            start: "top 20%",
-            end: "bottom 80%",
-            scrub: 1,
-          },
-        },
-      );
-
-      // Fade and scale sections on scroll
+      // Reveal animations
       gsap.utils.toArray<HTMLElement>(".reveal").forEach((elem) => {
-        return gsap.fromTo(
-          elem,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: elem,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
+        gsap.from(elem, {
+          y: 60,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: elem,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        });
       });
     },
-    { scope: containerRef },
+    { scope: containerRef }
   );
 
   return (
     <main
       ref={containerRef}
-      className="min-h-screen bg-background text-foreground selection:bg-primary/30 overflow-x-hidden"
+      className="min-h-screen bg-background text-foreground selection:bg-primary/30 overflow-x-hidden font-sans"
     >
       <Navbar />
 
       {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none hero-bg">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none bg-primary/10 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none bg-secondary/10 blur-[120px] animate-pulse delay-700" />
-        <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-none bg-accent/5 blur-[100px] animate-pulse delay-1000" />
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="bg-grid absolute inset-0">
+          {/* Dotted Grid */}
+          <div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(#80808044_1px,transparent_1px)] bg-size-[32px_32px]" />
+          {/* Linear Grid */}
+          <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[128px_128px]" />
+        </div>
+        
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-background via-transparent to-background" />
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px]" />
       </div>
 
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative z-10 min-h-screen flex flex-col justify-center items-center pt-20 px-6"
+        className="relative z-10 min-h-screen flex flex-col justify-center items-center pt-32 px-6"
       >
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-primary/5 text-primary text-[10px] font-black uppercase tracking-[0.2em] border border-primary/10 mb-8 backdrop-blur-md hero-sub">
-            <Sparkles className="w-3 h-3 animate-pulse" />
-            The Future of Strategic Validation
-          </div>
+        <div className="max-w-7xl mx-auto w-full">
+           <div className="flex flex-col items-center text-center">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-3 px-5 py-2 bg-primary/5 border border-primary/20 backdrop-blur-md mb-12"
+              >
+                <div className="w-2 h-2 bg-primary animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Ideon Protocol v1.0 Activated</span>
+              </motion.div>
 
-          <h1 className="text-7xl md:text-[9rem] font-black leading-[0.85] tracking-tighter text-foreground mb-10 hero-title overflow-hidden">
-            <span className="block">VALIDATE</span>
-            <span className="block text-primary italic">FASTER.</span>
-            <span className="block text-muted-foreground">BUILD BETTER.</span>
-          </h1>
+              <div className="relative mb-12">
+                 <div className="hero-line absolute -left-20 top-1/2 w-40 h-px bg-linear-to-r from-transparent to-primary/50 hidden lg:block" />
+                 <div className="hero-line absolute -right-20 top-1/2 w-40 h-px bg-linear-to-l from-transparent to-primary/50 hidden lg:block" />
+                 <h1 className="hero-text text-[clamp(3rem,12vw,10rem)] font-black leading-[0.8] tracking-tighter uppercase overflow-hidden">
+                    <span className="block italic text-muted-foreground/20">Think.</span>
+                    <span className="block text-primary">Validate.</span>
+                    <span className="block text-foreground">Dominate.</span>
+                 </h1>
+              </div>
 
-          <p className="mt-8 text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto font-medium hero-sub">
-            Ideon uses high-fidelity AI models to stress-test your SaaS concepts
-            against real-world market signals. Get a build or drop verdict in
-            seconds.
-          </p>
+              <p className="max-w-2xl text-xl text-muted-foreground font-medium leading-relaxed mb-16 opacity-80">
+                Deploy high-fidelity AI to stress-test your SaaS concepts before you touch a single line of code. Stop guessing. Start knowing.
+              </p>
 
-          <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 hero-sub">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <Link
+                  href="/register"
+                  className="group relative px-12 py-6 bg-primary text-primary-foreground font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <span className="relative z-10 flex items-center gap-3">
+                    Initiate Scan <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-12 py-6 bg-accent/10 border border-border text-foreground font-black uppercase tracking-[0.3em] text-xs hover:bg-accent/20 transition-all active:scale-95"
+                >
+                  Enter Dashboard
+                </Link>
+              </div>
+              <div className="mt-20 flex flex-col items-center gap-4 reveal">
+                 <div className="w-px h-16 bg-linear-to-b from-primary to-transparent" />
+                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/50">Transmission Downstream</span>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* The Arsenal - Modes Showcase */}
+      <section className="relative z-10 py-40 bg-accent/5 border-y border-border/50">
+        <div className="max-w-7xl mx-auto px-6">
+           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-24 gap-8 reveal">
+              <div className="space-y-4">
+                <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-none">
+                  THE <span className="text-primary">ARSENAL</span>
+                </h2>
+                <p className="text-xl text-muted-foreground font-medium tracking-tight">Three specialized intelligence protocols for absolute certainty.</p>
+              </div>
+              <div className="flex gap-4">
+                 <div className="px-4 py-2 border border-border bg-background text-[10px] font-black uppercase tracking-widest">v1.2.0 Engine</div>
+                 <div className="px-4 py-2 border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">Neural Logic Enabled</div>
+              </div>
+           </div>
+
+           <div className="grid lg:grid-cols-3 gap-8">
+              {/* Full Mode */}
+              <ModeCard 
+                icon={Brain}
+                title="IDEA LAB"
+                subtitle="The Strategic Core"
+                desc="A comprehensive 360° scan of your business concept. Analyzes value props, target markets, and competitive vulnerabilities with high-precision neural logic."
+                color="primary"
+                mode="FULL"
+              />
+              {/* Stress Mode */}
+              <ModeCard 
+                icon={Activity}
+                title="STRESS TEST"
+                subtitle="The Filter"
+                desc="Aggressive edge-case analysis. We push your idea to its breaking point to identify hidden risks, technical hurdles, and market saturation traps."
+                color="secondary"
+                mode="STRESS"
+              />
+              {/* Roast Mode */}
+              <ModeCard 
+                icon={Flame}
+                title="ROAST MODE"
+                subtitle="The Mirror"
+                desc="Brutal, unfiltered AI honesty. No corporate fluff—just a direct takedown of why your idea might fail, forcing you to build something truly bulletproof."
+                color="destructive"
+                mode="ROAST"
+              />
+           </div>
+        </div>
+      </section>
+
+      {/* Market Research Section */}
+      <section className="relative z-10 py-40 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+           <div className="grid lg:grid-cols-2 gap-20 items-center">
+              <div className="reveal">
+                 <div className="w-12 h-1 bg-primary mb-8" />
+                 <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-8 uppercase">
+                    Deep Market <br />
+                    <span className="text-muted-foreground/30">Intelligence.</span>
+                 </h2>
+                 <p className="text-xl text-muted-foreground font-medium leading-relaxed mb-12">
+                    Ideon doesn't just "think"—it researches. Our engine pulls real-time search volume, competitor density, and social signals to ground your idea in reality.
+                 </p>
+                 
+                 <div className="space-y-6">
+                    {[
+                      { icon: Search, title: "Search Intent Mapping", desc: "Identify what potential customers are actually looking for." },
+                      { icon: Target, title: "Competitor Vulnerability", desc: "Find the exact weaknesses in existing solutions." },
+                      { icon: TrendingUp, title: "Trend Trajectory", desc: "See if your market is growing or stagnant before you invest." }
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-6 group">
+                         <div className="w-12 h-12 shrink-0 border border-border bg-accent/10 flex items-center justify-center group-hover:border-primary/50 transition-colors">
+                            <item.icon className="w-5 h-5 text-primary" />
+                         </div>
+                         <div>
+                            <h4 className="text-lg font-black tracking-tight mb-1 uppercase">{item.title}</h4>
+                            <p className="text-muted-foreground text-sm font-medium">{item.desc}</p>
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+
+              <div className="relative reveal">
+                 <div className="absolute inset-0 bg-primary/10 blur-[100px] -z-10" />
+                 <div className="border border-border bg-card p-1">
+                    <div className="border border-border bg-background p-8 aspect-square flex flex-col justify-between overflow-hidden relative group">
+                       <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                             <div className="text-[10px] font-black text-primary uppercase tracking-widest">Live Engine Feed</div>
+                             <div className="text-2xl font-black tracking-tighter">DATA ANALYTICS</div>
+                          </div>
+                          <div className="w-10 h-10 border border-border flex items-center justify-center">
+                             <Activity className="w-4 h-4 animate-pulse" />
+                          </div>
+                       </div>
+                       
+                       <div className="flex-1 flex items-center justify-center py-12">
+                          <div className="w-full space-y-4">
+                             {[80, 45, 90, 60].map((w, i) => (
+                               <div key={i} className="space-y-1">
+                                  <div className="flex justify-between text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                                     <span>Vector {i + 1}</span>
+                                     <span>{w}%</span>
+                                  </div>
+                                  <div className="h-1 bg-border relative overflow-hidden">
+                                     <motion.div 
+                                       initial={{ width: 0 }}
+                                       whileInView={{ width: `${w}%` }}
+                                       transition={{ duration: 1.5, delay: i * 0.2 }}
+                                       className="h-full bg-primary shadow-[0_0_10px_var(--primary)]" 
+                                     />
+                                  </div>
+                               </div>
+                             ))}
+                          </div>
+                       </div>
+
+                       <div className="p-4 border border-border bg-accent/5 text-[9px] font-mono text-muted-foreground/60 leading-tight">
+                          [SYSTEM_LOG]: Parsing market signals... <br />
+                          [SYSTEM_LOG]: Sentiment score 0.82 recorded. <br />
+                          [SYSTEM_LOG]: Competitive overlap detected in segment A.
+                       </div>
+
+                       <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* The Vault - History Section */}
+      <section className="relative z-10 py-40 border-t border-border/50">
+        <div className="max-w-7xl mx-auto px-6">
+           <div className="bg-primary p-1 overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                 <History className="w-64 h-64 rotate-12" />
+              </div>
+              <div className="bg-background p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-20 relative z-10">
+                 <div className="lg:w-1/2 reveal">
+                    <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-8">
+                       <Lock className="w-3 h-3" />
+                       Intelligence Archive
+                    </div>
+                    <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-8 uppercase">
+                       THE <br />
+                       <span className="text-primary italic">VAULT.</span>
+                    </h2>
+                    <p className="text-xl text-muted-foreground font-medium leading-relaxed mb-10">
+                       Every idea you validate is preserved in your permanent Intelligence Archive. Track your strategic pivots, compare scores across concepts, and build a high-value portfolio of validated intellectual property.
+                    </p>
+                    <Link
+                      href="/register"
+                      className="inline-flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] text-primary group"
+                    >
+                      Build Your Portfolio <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                 </div>
+                 
+                 <div className="lg:w-1/2 w-full reveal">
+                    <div className="relative border border-border bg-accent/5 p-8 overflow-hidden group">
+                       <div className="flex flex-col gap-4">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="p-4 border border-border bg-background flex items-center justify-between group-hover:translate-x-2 transition-transform" style={{ transitionDelay: `${i * 100}ms` }}>
+                               <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-primary/5 flex items-center justify-center border border-primary/10">
+                                     <Brain className="w-4 h-4 text-primary" />
+                                  </div>
+                                  <div>
+                                     <div className="text-xs font-black uppercase tracking-tight">Validated Project {i}</div>
+                                     <div className="text-[10px] text-muted-foreground font-medium">14 May 2026 • Full Scan</div>
+                                  </div>
+                               </div>
+                               <div className="text-lg font-black text-primary">8{i}</div>
+                            </div>
+                          ))}
+                       </div>
+                       <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-background to-transparent z-10" />
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="relative z-10 py-40 bg-accent/5 border-y border-border/50">
+        <div className="max-w-7xl mx-auto px-6">
+           <div className="text-center mb-24 reveal">
+              <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest mb-8">
+                 <Zap className="w-3 h-3" />
+                 Deployment Tiers
+              </div>
+              <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6 uppercase">
+                 SCALE YOUR <span className="text-primary">VISION.</span>
+              </h2>
+              <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">Choose the intelligence protocol that matches your strategic ambitions.</p>
+           </div>
+
+           <div className="grid md:grid-cols-3 gap-8">
+              {/* Starter */}
+              <div className="reveal group border border-border bg-card p-1">
+                 <div className="bg-background p-10 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
+                    <div className="mb-8">
+                       <h3 className="text-xl font-black uppercase tracking-tight mb-1">Starter</h3>
+                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Basic Validation</p>
+                    </div>
+                    <div className="mb-10">
+                       <span className="text-5xl font-black tracking-tighter">$0</span>
+                       <span className="text-muted-foreground font-bold ml-2">/ Forever</span>
+                    </div>
+                    <ul className="space-y-4 mb-12 flex-1">
+                       <PricingFeature text="10 Credits per Day" />
+                       <PricingFeature text="Basic Idea Lab Access" />
+                       <PricingFeature text="Standard Processing Speed" />
+                       <PricingFeature text="Community Support" disabled />
+                    </ul>
+                    <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
+                       Deploy Starter
+                    </Link>
+                 </div>
+              </div>
+
+              {/* Pro */}
+              <div className="reveal group border-2 border-primary bg-primary/5 p-1 relative scale-105 shadow-[0_0_50px_rgba(var(--primary),0.1)] z-20">
+                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest">
+                    Most Deployed
+                 </div>
+                 <div className="bg-background p-10 h-full flex flex-col border border-primary/20">
+                    <div className="mb-8">
+                       <h3 className="text-xl font-black uppercase tracking-tight mb-1 text-primary">Pro</h3>
+                       <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Strategic Dominance</p>
+                    </div>
+                    <div className="mb-10">
+                       <span className="text-5xl font-black tracking-tighter">$29</span>
+                       <span className="text-muted-foreground font-bold ml-2">/ Month</span>
+                    </div>
+                    <ul className="space-y-4 mb-12 flex-1">
+                       <PricingFeature text="Unlimited AI Credits" highlight />
+                       <PricingFeature text="Full Access to Roast Mode" highlight />
+                       <PricingFeature text="Deep Stress Testing" highlight />
+                       <PricingFeature text="Priority Intelligence Queue" highlight />
+                       <PricingFeature text="Dedicated Support" highlight />
+                    </ul>
+                    <Link href="/register" className="w-full py-5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.4em] text-center hover:bg-primary/90 transition-all shadow-xl shadow-primary/20">
+                       Upgrade to Pro
+                    </Link>
+                 </div>
+              </div>
+
+              {/* Enterprise */}
+              <div className="reveal group border border-border bg-card p-1">
+                 <div className="bg-background p-10 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
+                    <div className="mb-8">
+                       <h3 className="text-xl font-black uppercase tracking-tight mb-1">Enterprise</h3>
+                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Custom Intelligence</p>
+                    </div>
+                    <div className="mb-10 text-3xl font-black tracking-tighter">Custom</div>
+                    <ul className="space-y-4 mb-12 flex-1">
+                       <PricingFeature text="Custom AI Training" />
+                       <PricingFeature text="API Command Access" />
+                       <PricingFeature text="Private Data Vaults" />
+                       <PricingFeature text="Dedicated Strategist" />
+                    </ul>
+                    <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
+                       Contact Intel
+                    </Link>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="relative z-10 py-60 text-center px-6">
+         <div className="reveal">
+            <h2 className="text-6xl md:text-[9rem] font-black tracking-[ -0.05em] leading-[0.8] mb-16 uppercase">
+               STOP WASTING <br />
+               <span className="text-muted-foreground/20">TALENT.</span>
+            </h2>
             <Link
               href="/register"
-              className="group relative px-10 py-5 rounded-none text-lg font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl shadow-primary/30 transition-all hover:scale-105 active:scale-95"
+              className="inline-block px-16 py-8 bg-foreground text-background font-black uppercase tracking-[0.4em] text-sm hover:bg-primary hover:text-primary-foreground transition-all hover:scale-110 active:scale-95 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)]"
             >
-              Start Free Scan
-              <ArrowRight className="inline-block ml-3 group-hover:translate-x-2 transition-transform" />
+              Analyze Your Idea Now
             </Link>
-            <Link
-              href="/pricing"
-              className="px-10 py-5 rounded-none text-lg font-black uppercase tracking-widest border border-border text-foreground backdrop-blur-sm hover:bg-muted/5 transition-all"
-            >
-              View Methodology
-            </Link>
-          </div>
-        </div>
-
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-            Scroll to explore
-          </span>
-          <div className="w-px h-12 bg-linear-to-b from-primary to-transparent" />
-        </div>
-      </section>
-
-      {/* How It Works - Vertical Timeline */}
-      <section
-        id="how-it-works"
-        ref={timelineRef}
-        className="relative z-10 py-40 px-6 overflow-hidden"
-      >
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-none blur-[150px] pointer-events-none" />
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-40 reveal">
-            <div className="inline-block mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-sm">
-                <Sparkles className="w-3 h-3 animate-pulse" />
-                The Process
-              </span>
-            </div>
-            <h2 className="text-6xl md:text-[5.5rem] font-black text-foreground tracking-tighter mb-6 leading-[1.1]">
-              From Idea to{" "}
-              <span className="text-primary">Strategic Insight</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium tracking-tight max-w-3xl mx-auto">
-              Our three-stage intelligence pipeline transforms your concept into
-              actionable intelligence.
-            </p>
-          </div>
-
-          <div className="relative">
-            {/* Timeline Line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 md:-translate-x-1/2 flex justify-center">
-              <div className="relative w-1 h-full">
-                {/* Background gradient line */}
-                <div className="absolute inset-0 w-full bg-linear-to-b from-primary via-accent to-secondary opacity-20 rounded-none blur-xl" />
-                {/* Border line */}
-                <div className="absolute inset-0 w-full bg-border rounded-none" />
-                {/* Animated progress line */}
-                <div
-                  ref={lineRef}
-                  className="absolute top-0 w-full bg-linear-to-b from-primary via-accent to-secondary origin-top shadow-[0_0_30px_rgba(var(--primary),0.5)] rounded-none blur-sm"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-32">
-              {[
-                {
-                  num: "01",
-                  title: "Idea Expansion",
-                  desc: "Submit your core concept. Our AI refines your value proposition, identifies target personas, and maps the primary pain points you're solving.",
-                  icon: MousePointerClick,
-                  gradient: "from-primary/20 to-primary/5",
-                  borderColor: "border-primary/30",
-                  dotColor: "bg-primary",
-                  accentColor: "text-primary",
-                },
-                {
-                  num: "02",
-                  title: "Deep Market Scan",
-                  desc: "We analyze search volume, competitor density, and real-world PH data to determine if there's genuine hunger for your solution.",
-                  icon: Search,
-                  gradient: "from-secondary/20 to-secondary/5",
-                  borderColor: "border-secondary/30",
-                  dotColor: "bg-secondary",
-                  accentColor: "text-secondary",
-                },
-                {
-                  num: "03",
-                  title: "Strategic Verdict",
-                  desc: "Get a data-backed score across 5 critical vectors. We provide an honest build, pivot, or drop recommendation.",
-                  icon: BarChart3,
-                  gradient: "from-accent/20 to-accent/5",
-                  borderColor: "border-accent/30",
-                  dotColor: "bg-accent",
-                  accentColor: "text-accent",
-                },
-              ].map((step, i) => (
-                <TimelineItem key={i} step={step} index={i} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section
-        id="features"
-        className="relative z-10 py-32 px-6 max-w-7xl mx-auto reveal"
-      >
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-          <div>
-            <h2 className="text-5xl md:text-7xl font-black text-foreground tracking-tighter leading-none mb-4 uppercase">
-              ENGINEERED FOR <br />
-              <span className="text-muted-foreground">DECISION MAKERS.</span>
-            </h2>
-          </div>
-          <p className="text-muted-foreground max-w-md font-medium text-lg leading-relaxed">
-            Stop relying on gut feeling. Leverage our high-performance analysis
-            engine to validate every strategic move.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              icon: Brain,
-              title: "Neural Logic Validation",
-              desc: "Our models go beyond keywords to understand the fundamental business logic of your idea.",
-            },
-            {
-              icon: Target,
-              title: "Competitor Vulnerability",
-              desc: "We don't just list competitors; we identify exactly where they are weak and where you can win.",
-            },
-            {
-              icon: TrendingUp,
-              title: "Real-Time Demand",
-              desc: "Live signals from market aggregators to ensure you aren't building in a vacuum.",
-            },
-            {
-              icon: Zap,
-              title: "Standardized Scoring",
-              desc: "Transparent metrics on execution difficulty, demand, and monetization potential.",
-            },
-            {
-              icon: ShieldCheck,
-              title: "Risk Mitigation",
-              desc: "Early identification of legal, technical, or market hurdles before they cost you capital.",
-            },
-            {
-              icon: CheckCircle2,
-              title: "Strategic Roadmap",
-              desc: "Personalized next steps based on your verdict, whether it's building an MVP or pivoting.",
-            },
-          ].map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="group relative p-1 rounded-none bg-muted/5 border border-border hover:border-primary/20 transition-all duration-500 shadow-2xl"
-              >
-                <div className="p-10 rounded-none bg-card/80 backdrop-blur-xl h-full flex flex-col justify-between">
-                  <div>
-                    <div className="w-14 h-14 rounded-none bg-primary/10 flex items-center justify-center border border-primary/20 mb-8 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                      <Icon className="w-7 h-7" />
-                    </div>
-                    <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed font-medium">
-                      {feature.desc}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative z-10 py-32 px-6 reveal">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative rounded-none overflow-hidden bg-primary p-20 md:p-32 text-center shadow-[0_0_100px_rgba(var(--primary),0.3)]">
-            <div className="absolute inset-0 bg-linear-to-br from-primary to-secondary opacity-50" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent opacity-30" />
-
-            <div className="relative z-10">
-              <h2 className="text-6xl md:text-[8rem] font-black text-primary-foreground tracking-tighter leading-[0.9] mb-10 uppercase">
-                DONT WASTE <br />
-                ANOTHER YEAR.
-              </h2>
-              <p className="text-xl md:text-2xl text-primary-foreground/80 mb-16 max-w-2xl mx-auto font-medium">
-                Join 10,000+ founders who use Ideon to stress-test their ideas
-                before touching a single line of code.
-              </p>
-              <Link
-                href="/register"
-                className="inline-block px-12 py-6 bg-background text-foreground hover:bg-muted rounded-none text-xl font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-2xl"
-              >
-                Validate My Idea Now
-              </Link>
-            </div>
-          </div>
-        </div>
+         </div>
       </section>
 
       <Footer />
@@ -356,125 +451,56 @@ export default function Home() {
   );
 }
 
-type TimelineStep = {
-  num: string;
-  title: string;
-  desc: string;
-  icon: LucideIcon;
-  gradient: string;
-  borderColor: string;
-  dotColor: string;
-  accentColor: string;
-};
+function PricingFeature({ text, highlight, disabled }: { text: string; highlight?: boolean; disabled?: boolean }) {
+  return (
+    <li className={`flex items-center gap-3 text-[11px] font-bold uppercase tracking-tight ${disabled ? "opacity-20" : highlight ? "text-foreground" : "text-muted-foreground"}`}>
+      <CheckCircle2 className={`w-4 h-4 ${disabled ? "text-muted-foreground" : highlight ? "text-primary" : "text-border"}`} />
+      {text}
+    </li>
+  );
+}
 
-function TimelineItem({ step, index }: { step: TimelineStep; index: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, margin: "-10%" });
-  const Icon = step.icon;
+function ModeCard({ icon: Icon, title, subtitle, desc, color, mode }: { icon: LucideIcon; title: string; subtitle: string; desc: string; color: string; mode: string }) {
+  const colorMap: Record<string, string> = {
+    primary: "text-primary border-primary/30 bg-primary/5 shadow-primary/20",
+    secondary: "text-secondary border-secondary/30 bg-secondary/5 shadow-secondary/20",
+    destructive: "text-destructive border-destructive/30 bg-destructive/5 shadow-destructive/20",
+  };
+
+  const currentStyle = colorMap[color];
 
   return (
-    <div
-      ref={ref}
-      className={`relative flex flex-col md:flex-row gap-12 md:gap-0 ${index % 2 === 1 ? "md:flex-row-reverse" : ""}`}
+    <motion.div 
+      whileHover={{ y: -10 }}
+      className="reveal group border border-border bg-card p-1 transition-all duration-500"
     >
-      <div className="w-full md:w-1/2 flex justify-center md:px-12">
-        <motion.div
-          initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-          animate={
-            isInView
-              ? { opacity: 1, x: 0 }
-              : { opacity: 0, x: index % 2 === 0 ? -50 : 50 }
-          }
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative w-full max-w-sm group"
-        >
-          {/* Animated background glow */}
-          <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-transparent rounded-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+      <div className="h-full bg-background p-10 flex flex-col border border-border relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4">
+           <span className={`text-[9px] font-black uppercase tracking-[0.3em] opacity-30 group-hover:opacity-100 transition-opacity ${currentStyle.split(' ')[0]}`}>{mode} PROTOCOL</span>
+        </div>
+        
+        <div className={`w-16 h-16 border border-border flex items-center justify-center mb-8 group-hover:border-primary transition-all duration-500`}>
+           <Icon className={`w-8 h-8 ${currentStyle.split(' ')[0]}`} />
+        </div>
+        
+        <div className="space-y-2 mb-6">
+           <h3 className="text-2xl font-black tracking-tighter uppercase">{title}</h3>
+           <p className={`text-[10px] font-black uppercase tracking-widest ${currentStyle.split(' ')[0]}`}>{subtitle}</p>
+        </div>
 
-          {/* Card */}
-          <div
-            className={`relative p-1 rounded-none bg-linear-to-br ${step.gradient} border ${step.borderColor} backdrop-blur-2xl overflow-hidden shadow-xl group-hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] transition-all duration-500`}
-          >
-            <div className="relative p-8 rounded-none bg-card/60 backdrop-blur-xl h-full flex flex-col">
-              {/* Number background */}
-              <div className="absolute top-4 right-4 text-6xl font-black text-muted-foreground/10 leading-none pointer-events-none">
-                {step.num}
-              </div>
+        <p className="text-muted-foreground text-sm font-medium leading-relaxed mb-8">
+           {desc}
+        </p>
 
-              {/* Icon */}
-              <motion.div
-                animate={isInView ? { y: 0, rotate: 0 } : { y: 10, rotate: -5 }}
-                transition={{ duration: 0.6 }}
-                className={`w-16 h-16 rounded-none bg-linear-to-br ${step.gradient} flex items-center justify-center border ${step.borderColor} mb-6 group-hover:scale-110 transition-transform shadow-lg relative z-10 shrink-0`}
-              >
-                <Icon className={`w-8 h-8 ${step.accentColor}`} />
-              </motion.div>
+        <div className="mt-auto pt-8 border-t border-border/50">
+           <Link href="/register" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+              Deploy Protocol <ChevronRight className="w-3 h-3" />
+           </Link>
+        </div>
 
-              {/* Content */}
-              <div className="relative z-10">
-                <h3
-                  className={`text-2xl font-black text-foreground mb-4 tracking-tight leading-tight ${step.accentColor} group-hover:text-foreground transition-colors`}
-                >
-                  {step.title}
-                </h3>
-                <p className="text-base text-muted-foreground leading-relaxed font-medium mb-6">
-                  {step.desc}
-                </p>
-
-                {/* Learn more link */}
-                <motion.button
-                  whileHover={{ x: 5 }}
-                  className={`inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest ${step.accentColor} hover:opacity-70 transition-opacity`}
-                >
-                  Explore
-                  <ArrowRight className="w-3 h-3" />
-                </motion.button>
-              </div>
-
-              {/* Bottom accent line */}
-              <div
-                className={`absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}
-              />
-            </div>
-          </div>
-        </motion.div>
+        {/* Hover accent */}
+        <div className={`absolute bottom-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left`} />
       </div>
-
-      {/* Timeline Dot */}
-      <div className="absolute left-4 md:left-1/2 top-0 md:-translate-x-1/2 flex justify-center z-20">
-        <motion.div
-          animate={isInView ? { scale: 1 } : { scale: 0.6 }}
-          className="relative"
-        >
-          {/* Outer glow */}
-          <div
-            className={`absolute inset-0 ${step.dotColor} rounded-none opacity-30 blur-lg animate-pulse`}
-            style={{
-              width: "32px",
-              height: "32px",
-              marginLeft: "-16px",
-              marginTop: "-16px",
-            }}
-          />
-
-          {/* Main dot with border */}
-          <motion.div
-            animate={
-              isInView
-                ? {
-                    boxShadow: `0 0 0 8px var(--background), 0 0 20px 2px var(--${step.dotColor.split("-")[1]})`,
-                  }
-                : {
-                    boxShadow: `0 0 0 4px var(--background), 0 0 0 0 var(--muted)`,
-                  }
-            }
-            transition={{ duration: 0.6 }}
-            className={`w-6 h-6 ${step.dotColor} rounded-none relative z-10 border-4 border-background`}
-          />
-        </motion.div>
-      </div>
-
-      <div className="hidden md:block w-1/2" />
-    </div>
+    </motion.div>
   );
 }

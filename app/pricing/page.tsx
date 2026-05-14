@@ -16,7 +16,7 @@ import {
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
 export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
