@@ -1,12 +1,17 @@
 import { ReactNode } from "react";
 
 export type UserProfile = {
+  id?: number;
   firstName?: string;
   lastName?: string;
   email?: string;
   plan?: string;
   tokensLeft?: number;
   profilePic?: string;
+  subscriptionStatus?: string;
+  subscriptionStartedAt?: string;
+  subscriptionEndsAt?: string;
+  createdAt?: string;
 };
 
 export type ScoreMap = Record<string, number>;
@@ -85,6 +90,7 @@ export type IdeaRecord = {
   idea?: string;
   createdAt: string;
   mode?: "full" | "stress" | "roast" | string;
+  status?: "pending" | "completed" | "failed" | string;
   result?: AnalysisResult;
 };
 

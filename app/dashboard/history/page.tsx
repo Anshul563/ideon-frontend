@@ -30,10 +30,22 @@ function HistoryContent() {
       });
   }, []);
 
-  const filteredIdeas = ideas.filter(item => 
+  // Group by unique idea and keep the most recent one
+  const uniqueIdeas = Array.from(
+    ideas.reduce((acc, current) => {
+      const ideaKey = current.idea || "";
+      const existing = acc.get(ideaKey);
+      if (!existing || (current.createdAt && existing.createdAt && new Date(current.createdAt) > new Date(existing.createdAt))) {
+        acc.set(ideaKey, current);
+      }
+      return acc;
+    }, new Map<string, IdeaRecord>()).values()
+  );
+
+  const filteredIdeas = uniqueIdeas.filter(item => 
     (item.idea || "").toLowerCase().includes(searchQuery) || 
     (item.mode || "").toLowerCase().includes(searchQuery)
-  );
+  ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   if (loading) {
     return (
@@ -100,7 +112,7 @@ function HistoryContent() {
                 <div className="hidden md:flex flex-col items-end gap-1">
                   <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Score</span>
                   <span className="text-xl font-black text-primary leading-none">
-                    {item.result?.scoring?.totalScore || item.result?.scoring?.score || "N/A"}
+                    {item.result?.scoring?.scores?.overall || item.result?.scoring?.totalScore || "N/A"}
                   </span>
                 </div>
                 <div className="w-10 h-10 rounded-none bg-accent flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all border border-border">

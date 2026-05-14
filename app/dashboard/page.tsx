@@ -16,7 +16,13 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import type { PaymentVerification } from "@/lib/types";
@@ -228,15 +234,18 @@ function DashboardContent() {
                 </Label>
                 <Select
                   value={targetAudience}
-                  onChange={(e) => setTargetAudience(e.target.value)}
-                  className="h-12 bg-background/50 border-border/50 rounded-none font-semibold"
+                  onValueChange={setTargetAudience}
                 >
-                  <option value="">Choose Audience...</option>
-                  <option value="b2b">B2B / Enterprises</option>
-                  <option value="b2c">B2C / General Consumers</option>
-                  <option value="developers">Developers / Technical Users</option>
-                  <option value="creators">Creators / Influencers</option>
-                  <option value="small-business">Small Business Owners</option>
+                  <SelectTrigger className="h-12 bg-background/50 border-border/50 rounded-none font-semibold">
+                    <SelectValue placeholder="Choose Audience..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="b2b">B2B / Enterprises</SelectItem>
+                    <SelectItem value="b2c">B2C / General Consumers</SelectItem>
+                    <SelectItem value="developers">Developers / Technical Users</SelectItem>
+                    <SelectItem value="creators">Creators / Influencers</SelectItem>
+                    <SelectItem value="small-business">Small Business Owners</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -247,15 +256,19 @@ function DashboardContent() {
                 </Label>
                 <Select
                   value={geographicScope}
-                  onChange={(e) => setGeographicScope(e.target.value)}
-                  className="h-12 bg-background/50 border-border/50 rounded-none font-semibold"
+                  onValueChange={setGeographicScope}
                 >
-                  <option value="Global">Global Reach</option>
-                  <option value="USA">USA / North America</option>
-                  <option value="Europe">Europe</option>
-                  <option value="India">India / Asia</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="MENA">Middle East / Africa</option>
+                  <SelectTrigger className="h-12 bg-background/50 border-border/50 rounded-none font-semibold">
+                    <SelectValue placeholder="Global Reach" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Global">Global Reach</SelectItem>
+                    <SelectItem value="USA">USA / North America</SelectItem>
+                    <SelectItem value="Europe">Europe</SelectItem>
+                    <SelectItem value="India">India / Asia</SelectItem>
+                    <SelectItem value="UK">United Kingdom</SelectItem>
+                    <SelectItem value="MENA">Middle East / Africa</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
@@ -317,15 +330,18 @@ function DashboardContent() {
                 </Label>
                 <Select
                   value={businessModel}
-                  onChange={(e) => setBusinessModel(e.target.value)}
-                  className="h-10 bg-background/30 border-border/30 rounded-none text-xs"
+                  onValueChange={setBusinessModel}
                 >
-                  <option value="">Select Model...</option>
-                  <option value="subscription">SaaS / Subscription</option>
-                  <option value="freemium">Freemium</option>
-                  <option value="one-time">One-time Purchase</option>
-                  <option value="ads">Ad-supported</option>
-                  <option value="marketplace">Marketplace</option>
+                  <SelectTrigger className="h-10 bg-background/30 border-border/30 rounded-none text-xs">
+                    <SelectValue placeholder="Select Model..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="subscription">SaaS / Subscription</SelectItem>
+                    <SelectItem value="freemium">Freemium</SelectItem>
+                    <SelectItem value="one-time">One-time Purchase</SelectItem>
+                    <SelectItem value="ads">Ad-supported</SelectItem>
+                    <SelectItem value="marketplace">Marketplace</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -336,14 +352,17 @@ function DashboardContent() {
                 </Label>
                 <Select
                   value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="h-10 bg-background/30 border-border/30 rounded-none text-xs"
+                  onValueChange={setBudget}
                 >
-                  <option value="">Select Budget...</option>
-                  <option value="under-1k">Under $1k</option>
-                  <option value="1k-10k">$1k - $10k</option>
-                  <option value="10k-50k">$10k - $50k</option>
-                  <option value="50k-plus">$50k+</option>
+                  <SelectTrigger className="h-10 bg-background/30 border-border/30 rounded-none text-xs">
+                    <SelectValue placeholder="Select Budget..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="under-1k">Under $1k</SelectItem>
+                    <SelectItem value="1k-10k">$1k - $10k</SelectItem>
+                    <SelectItem value="10k-50k">$10k - $50k</SelectItem>
+                    <SelectItem value="50k-plus">$50k+</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </CardContent>

@@ -24,13 +24,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 export default function AdminDashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const tabParam = searchParams.get("tab") as "stats" | "users" | "payments" | "coupons" | null;
+  const tabParam = searchParams.get("tab") as "stats" | "users" | "payments" | "coupons" | "tickets" | null;
   const activeTab = tabParam || "stats";
 
   const [stats, setStats] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // New Coupon Form
@@ -75,6 +76,9 @@ export default function AdminDashboard() {
       } else if (activeTab === "coupons") {
         const res = await axios.get(`${baseUrl}/api/admin/coupons`, config);
         setCoupons(res.data);
+      } else if (activeTab === "tickets") {
+        const res = await axios.get(`${baseUrl}/api/support/admin/tickets`, config);
+        setTickets(res.data);
       }
     } catch (error) {
       console.error("Failed to fetch admin data", error);
@@ -343,6 +347,58 @@ export default function AdminDashboard() {
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "tickets" && (
+            <motion.div 
+              key="tickets"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="bg-card/30 border border-border/50 rounded-3xl overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-muted/50 border-b border-border">
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">User</th>
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Category</th>
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Message</th>
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Status</th>
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tickets.map((t) => (
+                      <tr key={t.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
+                        <td className="p-4">
+                           <div className="flex flex-col">
+                              <span className="font-bold text-sm">{t.name}</span>
+                              <span className="text-[10px] text-muted-foreground">{t.email}</span>
+                           </div>
+                        </td>
+                        <td className="p-4">
+                           <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] font-bold uppercase tracking-widest">
+                              {t.category}
+                           </span>
+                        </td>
+                        <td className="p-4 text-sm max-w-md truncate text-muted-foreground" title={t.message}>
+                           {t.message}
+                        </td>
+                        <td className="p-4">
+                           <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                              {t.status}
+                           </span>
+                        </td>
+                        <td className="p-4 text-[10px] text-muted-foreground font-mono">
+                           {new Date(t.createdAt).toLocaleString()}
                         </td>
                       </tr>
                     ))}

@@ -36,6 +36,8 @@ export default function ResultPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     const fetchResult = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`, {
@@ -43,7 +45,37 @@ export default function ResultPage() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        
         setData(res.data);
+
+        // If still pending, start polling
+        if (res.data.status === "pending") {
+          intervalId = setInterval(async () => {
+            try {
+              const statusRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/status/${id}`, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              });
+
+              if (statusRes.data.status === "completed") {
+                // Fetch full data once completed
+                const fullRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`, {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                });
+                setData(fullRes.data);
+                clearInterval(intervalId);
+              } else if (statusRes.data.status === "failed") {
+                clearInterval(intervalId);
+                // Handle failure if needed
+              }
+            } catch (err) {
+              console.error("Polling error:", err);
+            }
+          }, 3000); // Poll every 3 seconds
+        }
       } catch (error) {
         console.error("Failed to fetch result:", error);
       } finally {
@@ -54,6 +86,10 @@ export default function ResultPage() {
     if (id) {
       fetchResult();
     }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [id]);
 
   const handleDownloadPDF = async () => {
@@ -376,6 +412,40 @@ export default function ResultPage() {
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
+        </Button>
+      </div>
+    );
+  }
+
+  if (data.status === "pending") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        <div className="relative mb-12">
+          <div className="w-32 h-32 rounded-none border-4 border-primary/20 border-t-primary animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Sparkles className="w-10 h-10 text-primary animate-pulse" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-black text-foreground mb-4 tracking-tight uppercase">AI Engine Processing</h2>
+        <div className="max-w-md w-full bg-accent/30 border border-border p-6 rounded-none space-y-4">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <span>Status</span>
+            <span className="text-primary animate-pulse">Running Pipeline...</span>
+          </div>
+          <div className="h-1.5 w-full bg-secondary/30 rounded-none overflow-hidden">
+            <div className="h-full bg-primary animate-progress-indefinite" />
+          </div>
+          <p className="text-sm text-center text-muted-foreground leading-relaxed">
+            Our AI models are currently generating SWOT analysis, risk mapping, and market projections for your idea. This usually takes 15-30 seconds.
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/dashboard")}
+          className="mt-12 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[10px]"
+        >
+          <ArrowLeft className="w-3 h-3 mr-2" />
+          Cancel and return
         </Button>
       </div>
     );

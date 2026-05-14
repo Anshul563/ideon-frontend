@@ -11,6 +11,7 @@ import {
   LogOut,
   ShieldCheck,
   Settings,
+  MessageSquare,
 } from "lucide-react";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
@@ -33,6 +34,7 @@ const adminNavItems = [
   { name: "Users", href: "/admin?tab=users", icon: Users },
   { name: "Sales", href: "/admin?tab=payments", icon: CreditCard },
   { name: "Coupons", href: "/admin?tab=coupons", icon: Ticket },
+  { name: "Support", href: "/admin?tab=tickets", icon: MessageSquare },
 ];
 
 export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
