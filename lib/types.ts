@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type UserProfile = {
   firstName?: string;
   lastName?: string;
@@ -64,6 +66,17 @@ export type AnalysisResult = {
   roasts?: RoastItem[];
   brutal_verdict?: string;
   the_burn?: string;
+  architecture?: {
+    tech_stack: string[];
+    architecture: {
+      nodes: any[];
+      edges: any[];
+    };
+    estimated_monthly_cost?: string;
+    security_score?: number;
+    scalability_strategy?: string;
+    security_recommendations?: string[];
+  };
   result?: AnalysisResult;
 };
 
@@ -85,6 +98,9 @@ export type AnalyticsData = {
 };
 
 export type TrendItem = {
+  growth: ReactNode;
+  score: number;
+  title: ReactNode;
   platform?: string;
   tags?: string[];
   name?: string;

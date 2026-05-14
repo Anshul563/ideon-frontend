@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
-import { History as HistoryIcon, Calendar, ArrowRight, Lightbulb } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { History as HistoryIcon, Calendar, ArrowRight, Lightbulb, Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { IdeaRecord } from "@/lib/types";
 
-export default function History() {
+function HistoryContent() {
   const [ideas, setIdeas] = useState<IdeaRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
   useEffect(() => {
     axios
@@ -28,10 +30,15 @@ export default function History() {
       });
   }, []);
 
+  const filteredIdeas = ideas.filter(item => 
+    (item.idea || "").toLowerCase().includes(searchQuery) || 
+    (item.mode || "").toLowerCase().includes(searchQuery)
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-none h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -40,24 +47,36 @@ export default function History() {
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       <header className="space-y-2">
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
+          <div className="px-3 py-1 rounded-none bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
             Memory Bank
           </div>
+          {searchQuery && (
+            <div className="px-3 py-1 rounded-none bg-accent text-accent-foreground text-[10px] font-black uppercase tracking-widest border border-border flex items-center gap-2">
+              <Search className="w-3 h-3" />
+              Searching: {searchQuery}
+            </div>
+          )}
         </div>
-        <h1 className="text-4xl font-black tracking-tight text-foreground">Analysis History</h1>
-        <p className="text-muted-foreground text-lg font-medium">Browse your past idea validations and strategic pivots</p>
+        <h1 className="text-4xl font-black tracking-tight text-foreground">
+          {searchQuery ? "Search Results" : "Analysis History"}
+        </h1>
+        <p className="text-muted-foreground text-lg font-medium">
+          {searchQuery 
+            ? `Found ${filteredIdeas.length} ideas matching your search` 
+            : "Browse your past idea validations and strategic pivots"}
+        </p>
       </header>
 
       <div className="grid gap-4">
-        {ideas.length > 0 ? (
-          ideas.map((item) => (
+        {filteredIdeas.length > 0 ? (
+          filteredIdeas.map((item) => (
             <div 
               key={item.id} 
               onClick={() => router.push(`/result/${item.id}`)}
-              className="bg-card hover:bg-accent/50 p-6 rounded-[24px] border border-border hover:border-primary/30 transition-all group flex items-center justify-between cursor-pointer active:scale-[0.98]"
+              className="bg-card hover:bg-accent/50 p-6 rounded-none border border-border hover:border-primary/30 transition-all group flex items-center justify-between cursor-pointer active:scale-[0.98]"
             >
               <div className="flex items-center gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-105 transition-transform">
+                <div className="w-14 h-14 rounded-none bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-105 transition-transform">
                   <Lightbulb className="w-7 h-7" />
                 </div>
                 <div>
@@ -70,7 +89,7 @@ export default function History() {
                         : "Unknown date"}
                     </p>
                     <span className="text-muted-foreground/30">•</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest bg-secondary px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-black uppercase tracking-widest bg-secondary px-2 py-0.5 rounded-none">
                       {item.mode} Mode
                     </span>
                   </div>
@@ -84,24 +103,30 @@ export default function History() {
                     {item.result?.scoring?.totalScore || item.result?.scoring?.score || "N/A"}
                   </span>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all border border-border">
+                <div className="w-10 h-10 rounded-none bg-accent flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-all border border-border">
                   <ArrowRight className="w-5 h-5" />
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="bg-card p-20 rounded-[40px] border border-dashed border-border text-center">
-            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-6">
+          <div className="bg-card p-20 rounded-none border border-dashed border-border text-center">
+            <div className="w-16 h-16 rounded-none bg-muted flex items-center justify-center mx-auto mb-6">
               <HistoryIcon className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-bold text-foreground tracking-tight mb-2">No history yet</h3>
-            <p className="text-muted-foreground font-medium max-w-sm mx-auto mb-8">Start by analyzing your first idea on the overview page to build your portfolio.</p>
+            <h3 className="text-xl font-bold text-foreground tracking-tight mb-2">
+              {searchQuery ? "No matching ideas" : "No history yet"}
+            </h3>
+            <p className="text-muted-foreground font-medium max-w-sm mx-auto mb-8">
+              {searchQuery 
+                ? "Try a different search term or browse your full history." 
+                : "Start by analyzing your first idea on the overview page to build your portfolio."}
+            </p>
             <button 
-              onClick={() => router.push('/dashboard')}
-              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+              onClick={() => searchQuery ? router.push('/dashboard/history') : router.push('/dashboard')}
+              className="px-6 py-3 rounded-none bg-primary text-primary-foreground font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
             >
-              Analyze New Idea
+              {searchQuery ? "Clear Search" : "Analyze New Idea"}
             </button>
           </div>
         )}
@@ -110,3 +135,10 @@ export default function History() {
   );
 }
 
+export default function History() {
+  return (
+    <Suspense fallback={<div>Loading history...</div>}>
+      <HistoryContent />
+    </Suspense>
+  );
+}

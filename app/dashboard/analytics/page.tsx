@@ -28,14 +28,14 @@ export default function Analytics() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-none animate-spin" />
     </div>
   );
 
   if (!data || data.total === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
-        <div className="w-20 h-20 rounded-3xl bg-muted flex items-center justify-center border border-border">
+        <div className="w-20 h-20 rounded-none bg-muted flex items-center justify-center border border-border">
           <BarChart3 className="w-10 h-10 text-muted-foreground" />
         </div>
         <div className="space-y-2">
@@ -50,7 +50,7 @@ export default function Analytics() {
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       <header className="space-y-2">
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
+          <div className="px-3 py-1 rounded-none bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
             Insights Dashboard
           </div>
         </div>
@@ -60,30 +60,30 @@ export default function Analytics() {
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Total Ideas */}
-        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+        <div className="bg-card p-8 rounded-none border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
           <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
             <Layers className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+            <div className="p-2 rounded-none bg-primary/10 border border-primary/20 text-primary">
               <Layers className="w-5 h-5" />
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Total Concepts</p>
           </div>
           <h2 className="text-5xl font-black text-foreground tracking-tighter">{data.total}</h2>
-          <div className="mt-6 flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-wider bg-primary/10 px-3 py-1.5 rounded-lg w-fit border border-primary/20">
+          <div className="mt-6 flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-wider bg-primary/10 px-3 py-1.5 rounded-none w-fit border border-primary/20">
             <TrendingUp className="w-3.5 h-3.5" /> 
             Active Portfolio
           </div>
         </div>
 
         {/* Avg Score */}
-        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+        <div className="bg-card p-8 rounded-none border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
           <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
             <Activity className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+            <div className="p-2 rounded-none bg-primary/10 border border-primary/20 text-primary">
               <Activity className="w-5 h-5" />
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Average Score</p>
@@ -96,12 +96,12 @@ export default function Analytics() {
         </div>
 
         {/* Verdict Distribution */}
-        <div className="bg-card p-8 rounded-[32px] border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
+        <div className="bg-card p-8 rounded-none border border-border relative overflow-hidden group hover:border-primary/30 transition-all">
           <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
             <PieChart className="w-32 h-32 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+            <div className="p-2 rounded-none bg-primary/10 border border-primary/20 text-primary">
               <PieChart className="w-5 h-5" />
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Verdict Spread</p>
@@ -111,9 +111,9 @@ export default function Analytics() {
               <div key={i} className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground/70 uppercase tracking-tight">{v.verdict}</span>
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-1.5 bg-accent rounded-full overflow-hidden border border-border">
+                  <div className="w-20 h-1.5 bg-accent rounded-none overflow-hidden border border-border">
                     <div 
-                      className="h-full bg-primary rounded-full shadow-sm" 
+                      className="h-full bg-primary rounded-none shadow-sm" 
                       style={{ width: `${(v.count / data.total) * 100}%` }}
                     />
                   </div>
@@ -126,10 +126,10 @@ export default function Analytics() {
       </div>
 
       {/* Deep Intelligence Section */}
-      <div className="bg-card p-12 rounded-[48px] border border-border relative overflow-hidden flex flex-col items-center justify-center group text-center">
+      <div className="bg-card p-12 rounded-none border border-border relative overflow-hidden flex flex-col items-center justify-center group text-center">
         <div className="absolute inset-0 bg-primary/2 group-hover:bg-primary/4 transition-all" />
         <div className="relative z-10 space-y-6">
-          <div className="w-16 h-16 rounded-2xl bg-accent border border-border flex items-center justify-center mx-auto shadow-sm group-hover:scale-105 transition-transform">
+          <div className="w-16 h-16 rounded-none bg-accent border border-border flex items-center justify-center mx-auto shadow-sm group-hover:scale-105 transition-transform">
             <BarChart3 className="w-8 h-8 text-primary/50" />
           </div>
           <div className="space-y-2">
@@ -140,8 +140,8 @@ export default function Analytics() {
             </p>
           </div>
           <div className="flex items-center justify-center gap-4 pt-4">
-             <div className="px-3 py-1 rounded-full bg-accent text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Indexing...</div>
-             <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">Beta Access Enabled</div>
+             <div className="px-3 py-1 rounded-none bg-accent text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Indexing...</div>
+             <div className="px-3 py-1 rounded-none bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">Beta Access Enabled</div>
           </div>
         </div>
       </div>

@@ -385,87 +385,97 @@ export default function ResultPage() {
     <div className="min-h-screen bg-background pb-20">
       <LoadingDialog isOpen={isAnalyzing} />
       
-      <div className="max-w-6xl mx-auto px-6 pt-12">
-        <nav className="flex items-center justify-between mb-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 pt-8 md:pt-12">
+        <nav className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-8 md:mb-12">
           <Button
             variant="ghost"
             onClick={() => router.push("/dashboard")}
-            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors self-start"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="font-medium">Dashboard</span>
           </Button>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
             {/* Toggle Button Group */}
-            <div className="flex items-center bg-accent/30 p-1 rounded-2xl border border-border">
+            <div className="flex items-center bg-accent/30 p-1 rounded-none border border-border shrink-0">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => handleSwitchMode("full")}
-                className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "full" 
                     ? "bg-primary text-primary-foreground shadow-lg hover:bg-primary/90" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
-                <BarChart4 className="w-3.5 h-3.5 mr-2" />
+                <BarChart4 className="w-3.5 h-3.5 mr-1 md:mr-2" />
                 Full Analysis
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => handleSwitchMode("stress")}
-                className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "stress" 
                     ? "bg-rose-500 text-white shadow-lg hover:bg-rose-600" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
-                <Flame className="w-3.5 h-3.5 mr-2" />
+                <Flame className="w-3.5 h-3.5 mr-1 md:mr-2" />
                 Stress Test
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => handleSwitchMode("roast")}
-                className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "roast" 
                     ? "bg-orange-500 text-white shadow-lg hover:bg-orange-600" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
-                <Skull className="w-3.5 h-3.5 mr-2" />
+                <Skull className="w-3.5 h-3.5 mr-1 md:mr-2" />
                 Roast Mode
               </Button>
             </div>
 
-            <div className="h-8 w-px bg-border mx-2" />
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => router.push(`/dashboard/result/${id}/architecture`)}
+              className="rounded-none bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 h-9 shadow-lg shadow-indigo-500/20 shrink-0 whitespace-nowrap"
+            >
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              Blueprint
+            </Button>
 
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon" className="bg-accent/50 hover:bg-accent border-border rounded-xl text-muted-foreground hover:text-foreground transition-all">
-                <Share2 className="w-5 h-5" />
+            <div className="h-8 w-px bg-border mx-1 shrink-0" />
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="icon" className="h-9 w-9 bg-accent/50 hover:bg-accent border-border rounded-none text-muted-foreground hover:text-foreground transition-all">
+                <Share2 className="w-4 h-4" />
               </Button>
               <Button 
                 variant="outline" 
                 size="icon" 
                 onClick={handleDownloadPDF}
-                className="bg-accent/50 hover:bg-accent border-border rounded-xl text-muted-foreground hover:text-foreground transition-all"
+                className="h-9 w-9 bg-accent/50 hover:bg-accent border-border rounded-none text-muted-foreground hover:text-foreground transition-all"
               >
-                <Download className="w-5 h-5" />
+                <Download className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </nav>
 
-        <div id="report-content" className="p-4 rounded-[40px]">
+        <div id="report-content" className="p-4 rounded-none">
           <header className="mb-12">
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <div className="px-3 py-1 rounded-none bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                 <Sparkles className="w-3 h-3" />
                 AI Analysis Complete
               </div>
-              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <div className="px-3 py-1 rounded-none bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                 <ShieldCheck className="w-3 h-3" />
                 Dual-Model Verified
               </div>
@@ -479,7 +489,7 @@ export default function ResultPage() {
             <div className="flex items-center gap-4">
               <div className="flex -space-x-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-card flex items-center justify-center">
+                  <div key={i} className="w-8 h-8 rounded-none border-2 border-background bg-card flex items-center justify-center">
                      <Sparkles className="w-3 h-3 text-primary" />
                   </div>
                 ))}

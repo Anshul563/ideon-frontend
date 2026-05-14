@@ -93,7 +93,7 @@
   --border: oklch(0.8699 0 0);
   --input: oklch(0.8699 0 0);
   --ring: oklch(0.8677 0.0735 7.0855);
-  --radius: 0.5rem;
+  --radius: 0px;
   --sidebar: oklch(0.9809 0.0025 228.7836);
   --sidebar-foreground: oklch(0.3211 0 0);
   --sidebar-primary: oklch(0.8677 0.0735 7.0855);
@@ -162,7 +162,7 @@
   --chart-3: oklch(0.8148 0.0819 225.7537);
   --chart-4: oklch(0.9680 0.2110 109.7692);
   --chart-5: oklch(0.8652 0.1768 90.3816);
-  --radius: 0.5rem;
+  --radius: 0px;
   --font-sans: Poppins, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: Roboto Mono, monospace;
@@ -195,4 +195,13 @@
   html {
     @apply font-mono;
   }
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.animate-scan {
+  animation: scan 2s linear infinite;
 }
