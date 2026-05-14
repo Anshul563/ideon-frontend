@@ -51,12 +51,12 @@ import {
   Terminal,
   AlertTriangle,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import LoadingDialog from "@/components/LoadingDialog";
 import type { IdeaRecord } from "@/lib/types";
 import { useUserPlan } from "@/hooks/useUserPlan";
-import { Sparkles } from "lucide-react";
 
 // --- Custom Components ---
 
@@ -832,32 +832,6 @@ export default function ArchitecturePage() {
           </div>
         </ReactFlow>
       </div>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--border);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: var(--primary);
-        }
-        @keyframes scan {
-          from {
-            top: 0;
-          }
-          to {
-            top: 100%;
-          }
-        }
-        .animate-scan {
-          animation: scan 3s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }

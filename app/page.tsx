@@ -25,6 +25,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import type { LucideIcon } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -87,6 +88,7 @@ export default function Home() {
       ref={containerRef}
       className="min-h-screen bg-background text-foreground selection:bg-primary/30 overflow-x-hidden font-sans"
     >
+      <AnnouncementBar />
       <Navbar />
 
       {/* Dynamic Background */}

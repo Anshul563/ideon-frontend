@@ -23,6 +23,7 @@ export default function RootLayout({
         "antialiased",
         "font-mono",
       )}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
         <div className="fixed inset-0 z-[-1] pointer-events-none">

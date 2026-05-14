@@ -19,6 +19,8 @@ import {
   ShieldCheck
 } from "lucide-react";
 import LoadingDialog from "../../../components/LoadingDialog";
+import { useUserPlan } from "@/hooks/useUserPlan";
+import { Lock } from "lucide-react";
 import type {
   BetterVersion,
   Competitor,
@@ -34,6 +36,7 @@ export default function ResultPage() {
   const [data, setData] = useState<IdeaRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { isPaid } = useUserPlan();
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -513,10 +516,21 @@ export default function ResultPage() {
             <Button
               variant="default"
               size="sm"
-              onClick={() => router.push(`/dashboard/result/${id}/architecture`)}
-              className="rounded-none bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 h-9 shadow-lg shadow-indigo-500/20 shrink-0 whitespace-nowrap"
+              onClick={() => {
+                if (!isPaid) {
+                  router.push('/pricing');
+                  return;
+                }
+                router.push(`/dashboard/result/${id}/architecture`);
+              }}
+              className={`rounded-none font-bold px-4 h-9 shadow-lg transition-all shrink-0 whitespace-nowrap ${
+                isPaid 
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20" 
+                  : "bg-muted text-muted-foreground border-border shadow-none"
+              }`}
             >
-              <ShieldCheck className="w-4 h-4 mr-2" />
+              {!isPaid && <Lock className="w-3.5 h-3.5 mr-2" />}
+              {isPaid && <ShieldCheck className="w-4 h-4 mr-2" />}
               Blueprint
             </Button>
 

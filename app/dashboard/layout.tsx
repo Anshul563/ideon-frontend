@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardNavbar } from "@/components/DashboardNavbar";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import type { UserProfile } from "@/lib/types";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +46,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         
         <main className="flex-1 relative flex flex-col min-w-0">
           <DashboardNavbar user={user} onUserUpdate={fetchUser} />
+          <AnnouncementBar />
           
           <div className="flex-1 overflow-y-auto">
             <div className="p-6 md:p-10 max-w-7xl mx-auto min-h-full">

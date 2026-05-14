@@ -180,6 +180,7 @@ export default function AdminDashboard() {
                       <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">User</th>
                       <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Email</th>
                       <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Plan</th>
+                      <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Status</th>
                       <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Role</th>
                       <th className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Joined</th>
                     </tr>
@@ -192,6 +193,11 @@ export default function AdminDashboard() {
                         <td className="p-4">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${user.plan === 'free' ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary'}`}>
                             {user.plan}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${user.subscriptionStatus === 'active' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>
+                            {user.subscriptionStatus || 'Inactive'}
                           </span>
                         </td>
                         <td className="p-4 text-xs font-bold uppercase">{user.role}</td>

@@ -6,7 +6,7 @@ import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-border/50 bg-background/60">
+    <nav className="sticky top-0 w-full z-50 backdrop-blur-xl border-b border-border/50 bg-background/60">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-none bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">

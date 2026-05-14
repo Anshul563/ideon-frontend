@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Settings,
   MessageSquare,
+  Megaphone,
 } from "lucide-react";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
@@ -33,6 +34,8 @@ const adminNavItems = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
   { name: "Users", href: "/admin?tab=users", icon: Users },
   { name: "Sales", href: "/admin?tab=payments", icon: CreditCard },
+  { name: "Plans", href: "/admin/plans", icon: Settings },
+  { name: "Announcements", href: "/admin/announcements", icon: Megaphone },
   { name: "Coupons", href: "/admin?tab=coupons", icon: Ticket },
   { name: "Support", href: "/admin?tab=tickets", icon: MessageSquare },
 ];
