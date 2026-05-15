@@ -81,6 +81,15 @@ export type AnalysisResult = {
     security_score?: number;
     scalability_strategy?: string;
     security_recommendations?: string[];
+    database_schema?: Array<{
+      table: string;
+      columns: Array<{ 
+        name: string; 
+        type: string; 
+        key?: string; 
+        references?: { table: string; column: string } 
+      }>;
+    }>;
   };
   result?: AnalysisResult;
 };

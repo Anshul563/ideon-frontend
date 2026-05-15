@@ -51,6 +51,8 @@ import {
   Terminal,
   AlertTriangle,
   CheckCircle2,
+  Table,
+  Columns,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import LoadingDialog from "@/components/LoadingDialog";
@@ -130,8 +132,61 @@ const CustomNode = memo(({ data }: NodeProps) => {
   );
 });
 
+const DatabaseNode = memo(({ data }: NodeProps) => {
+  return (
+    <div className="bg-card border-2 border-border shadow-2xl min-w-[220px] rounded-none overflow-hidden font-mono animate-in fade-in zoom-in-95 duration-500">
+      <div className="bg-primary/20 px-4 py-3 border-b-2 border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Database className="w-4 h-4 text-primary" />
+          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">
+            {data.label as string}
+          </span>
+        </div>
+        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+      </div>
+      <div className="p-0">
+        {(data.columns as any[]).map((col: any, i: number) => (
+          <div key={i} className="flex items-center justify-between px-4 py-2.5 border-b border-border/30 last:border-0 hover:bg-primary/5 relative group transition-colors">
+            <Handle 
+              type="target" 
+              position={Position.Left} 
+              id={`${col.name}-target`} 
+              className="bg-primary! border-none! w-1.5! h-1.5! -left-1!" 
+            />
+            
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-bold text-foreground/90">{col.name}</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-muted-foreground italic opacity-70">{col.type}</span>
+              {col.key && (
+                <div className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none border ${
+                  col.key === 'primary' 
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' 
+                    : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
+                }`}>
+                  {col.key === 'primary' ? 'PK' : 'FK'}
+                </div>
+              )}
+            </div>
+
+            <Handle 
+              type="source" 
+              position={Position.Right} 
+              id={`${col.name}-source`} 
+              className="bg-primary! border-none! w-1.5! h-1.5! -right-1!" 
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
+
 const nodeTypes = {
   custom: CustomNode,
+  database: DatabaseNode,
 };
 
 export default function ArchitecturePage() {
@@ -142,7 +197,10 @@ export default function ArchitecturePage() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [activePanel, setActivePanel] = useState<"stack" | "security" | "cost" | "details">("stack");
+  const [activePanel, setActivePanel] = useState<"stack" | "security" | "cost" | "details" | "database">("stack");
+  const [viewMode, setViewMode] = useState<"architecture" | "database">("architecture");
+  const [archFlow, setArchFlow] = useState<{nodes: Node[], edges: Edge[]}>({nodes: [], edges: []});
+  const [dbFlow, setDbFlow] = useState<{nodes: Node[], edges: Edge[]}>({nodes: [], edges: []});
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -203,11 +261,9 @@ export default function ArchitecturePage() {
         const rawArchData = res.data.result?.architecture;
 
         if (rawArchData && isPaid) {
-          // Robust mapping for different prompt versions/AI responses
-          const nodesData =
-            rawArchData.architecture?.nodes || rawArchData.nodes;
-          const edgesData =
-            rawArchData.architecture?.edges || rawArchData.edges;
+          // Architecture Flow
+          const nodesData = rawArchData.architecture?.nodes || rawArchData.nodes;
+          const edgesData = rawArchData.architecture?.edges || rawArchData.edges;
           const techStack = rawArchData.tech_stack || [];
 
           if (nodesData && nodesData.length > 0) {
@@ -225,36 +281,54 @@ export default function ArchitecturePage() {
               ...e,
               animated: true,
               label: e.label || "",
-              labelStyle: {
-                fill: theme === "dark" ? "#94a3b8" : "#64748b",
-                fontSize: 10,
-                fontWeight: 700,
-              },
-              labelBgPadding: [4, 2],
-              labelBgBorderRadius: 0,
-              labelBgStyle: {
-                fill: theme === "dark" ? "#0f172a" : "#f8fafc",
-                fillOpacity: 0.8,
-              },
               style: { stroke: "var(--primary)", strokeWidth: 2 },
             }));
 
-            setNodes(styledNodes);
-            setEdges(styledEdges);
-          } else {
-            // Fallback for older results or failed generation
-            generateFallbackArchitecture(
-              techStack.length > 0
-                ? techStack
-                : ["React", "Node.js", "PostgreSQL"],
-            );
+            setArchFlow({ nodes: styledNodes, edges: styledEdges });
+            if (viewMode === "architecture") {
+              setNodes(styledNodes);
+              setEdges(styledEdges);
+            }
           }
-        } else if (isPaid) {
-          generateFallbackArchitecture(["Next.js", "Express", "PostgreSQL"]);
+
+          // Database Flow
+          const dbSchema = rawArchData.database_schema;
+          if (dbSchema && dbSchema.length > 0) {
+            const dNodes: Node[] = [];
+            const dEdges: Edge[] = [];
+
+            dbSchema.forEach((table: any, idx: number) => {
+              dNodes.push({
+                id: table.table,
+                type: "database",
+                position: { x: (idx % 2) * 400, y: Math.floor(idx / 2) * 300 },
+                data: { label: table.table, columns: table.columns },
+              });
+
+              table.columns.forEach((col: any) => {
+                if (col.key === "foreign" && col.references) {
+                  dEdges.push({
+                    id: `e-${table.table}-${col.references.table}`,
+                    source: col.references.table,
+                    target: table.table,
+                    sourceHandle: `${col.references.column}-source`,
+                    targetHandle: `${col.name}-target`,
+                    animated: true,
+                    style: { stroke: "#6366f1", strokeWidth: 2 },
+                  });
+                }
+              });
+            });
+
+            setDbFlow({ nodes: dNodes, edges: dEdges });
+            if (viewMode === "database") {
+              setNodes(dNodes);
+              setEdges(dEdges);
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to fetch architecture:", error);
-        if (isPaid) generateFallbackArchitecture(["Next.js", "Node.js", "PostgreSQL"]);
       } finally {
         setLoading(false);
       }
@@ -517,23 +591,24 @@ export default function ArchitecturePage() {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          <div className="hidden xl:flex items-center gap-1 p-1 bg-accent/30 border border-border">
-            {(["stack", "security", "cost"] as const).map((tab) => (
-              <Button
-                key={tab}
-                variant="ghost"
-                size="sm"
-                onClick={() => setActivePanel(tab)}
-                className={`rounded-none px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
-                  activePanel === tab
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {tab}
-              </Button>
-            ))}
-          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Ideon Blueprint',
+                  text: `Technical blueprint for ${data?.idea}`,
+                  url: window.location.href,
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+              }
+            }}
+            className="rounded-none border-2 border-border h-10 w-10 shrink-0 hover:bg-primary hover:text-primary-foreground transition-all"
+          >
+            <Share2 className="w-5 h-5" />
+          </Button>
           <Button
             variant="outline"
             size="icon"
@@ -615,10 +690,21 @@ export default function ArchitecturePage() {
             <div className="bg-card/95 backdrop-blur-2xl border border-border shadow-2xl flex flex-col max-h-[80vh] rounded-none">
               {/* Panel Header */}
               <div className="flex border-b border-border">
-                {["stack", "security", "details"].map((panel) => (
-                  <button
+                {["stack", "security", "database", "details"].map((panel) => (
+              <button
                     key={panel}
-                    onClick={() => setActivePanel(panel as any)}
+                    onClick={() => {
+                      setActivePanel(panel as any);
+                      if (panel === "database") {
+                        setViewMode("database");
+                        setNodes(dbFlow.nodes);
+                        setEdges(dbFlow.edges);
+                      } else {
+                        setViewMode("architecture");
+                        setNodes(archFlow.nodes);
+                        setEdges(archFlow.edges);
+                      }
+                    }}
                     className={`flex-1 py-2 text-[9px] font-black uppercase tracking-widest transition-all ${
                       activePanel === panel
                         ? "bg-primary text-primary-foreground"
@@ -750,6 +836,69 @@ export default function ArchitecturePage() {
                             </span>
                           </div>
                         ),
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activePanel === "database" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-2.5 mb-6">
+                      <Database className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-black tracking-tight text-foreground uppercase">
+                        Schema Generator
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4">
+                      {data?.result?.architecture?.database_schema ? (
+                        data.result.architecture.database_schema.map((table, idx) => (
+                          <div key={idx} className="border border-border bg-accent/20 overflow-hidden">
+                            <div className="bg-primary/10 px-3 py-2 border-b border-border flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Table className="w-3.5 h-3.5 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                                  {table.table}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-0">
+                              <table className="w-full text-[9px] font-mono">
+                                <thead className="bg-accent/30 border-b border-border">
+                                  <tr>
+                                    <th className="text-left px-3 py-1.5 text-muted-foreground uppercase">Col</th>
+                                    <th className="text-left px-3 py-1.5 text-muted-foreground uppercase">Type</th>
+                                    <th className="text-right px-3 py-1.5 text-muted-foreground uppercase">Key</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {table.columns.map((col, cidx) => (
+                                    <tr key={cidx} className="border-b border-border/50 last:border-0 hover:bg-primary/5 transition-colors">
+                                      <td className="px-3 py-1.5 text-foreground font-bold">{col.name}</td>
+                                      <td className="px-3 py-1.5 text-muted-foreground">{col.type}</td>
+                                      <td className="px-3 py-1.5 text-right">
+                                        {col.key && (
+                                          <span className={`px-1 py-0.5 text-[7px] font-black uppercase rounded-none ${
+                                            col.key === 'primary' ? 'bg-amber-500/20 text-amber-500' : 'bg-indigo-500/20 text-indigo-500'
+                                          }`}>
+                                            {col.key === 'primary' ? 'PK' : 'FK'}
+                                          </span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="py-12 text-center bg-accent/10 border border-dashed border-border">
+                          <Database className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                            No schema data available<br/>for this blueprint
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
