@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { BetaVersionDialog } from "@/components/BetaVersionDialog";
 import {
   Select,
   SelectContent,
@@ -136,6 +137,7 @@ function DashboardContent() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-1000 max-w-6xl mx-auto pb-20">
+      <BetaVersionDialog />
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px] rounded-none border-border bg-card/95 backdrop-blur-2xl">

@@ -26,9 +26,14 @@ export function Logo({ className = "", showText = true, size = "md", href = "/" 
       </div>
       {showText && (
         <div className="flex flex-col">
-          <h1 className={`${text} font-black tracking-tighter text-foreground leading-none`}>
-            Ideon
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className={`${text} font-black tracking-tighter text-foreground leading-none uppercase`}>
+              Ideon
+            </h1>
+            <div className="px-1.5 py-0.5 bg-primary/10 border border-primary/20 text-[8px] font-black text-primary uppercase tracking-[0.1em] leading-none mb-0.5">
+              Beta
+            </div>
+          </div>
           <span className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] mt-1">Intelligence</span>
         </div>
       )}

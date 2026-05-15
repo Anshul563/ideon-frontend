@@ -27,6 +27,7 @@ import { useGSAP } from "@gsap/react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import { BetaVersionDialog } from "@/components/BetaVersionDialog";
 import { PLAN_FEATURES, PLAN_METADATA } from "@/lib/plan-rules";
 import type { LucideIcon } from "lucide-react";
 
@@ -103,6 +104,7 @@ export default function Home() {
       ref={containerRef}
       className="min-h-screen bg-background text-foreground selection:bg-primary/30 overflow-x-hidden font-sans"
     >
+      <BetaVersionDialog />
       <AnnouncementBar />
       <Navbar />
 
