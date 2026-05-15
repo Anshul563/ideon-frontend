@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Brain, Globe, Zap, ArrowUpRight } from "lucide-react";
+import { Globe, ArrowUpRight } from "lucide-react";
+import { Logo } from "./Logo";
 
 export function Footer() {
   return (
@@ -17,17 +18,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-32">
           {/* Brand Column */}
           <div className="col-span-2 space-y-8">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-none bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                <Brain className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div className="flex flex-col">
-                <h3 className="text-2xl font-black text-foreground tracking-tighter leading-none">
-                  Ideon
-                </h3>
-                <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em] mt-1">Strategic Intel</span>
-              </div>
-            </Link>
+            <Logo size="lg" />
             <p className="text-sm text-muted-foreground font-medium leading-relaxed max-w-xs">
               High-fidelity AI validation for the next generation of founders. Stress-test your concepts before you build.
             </p>

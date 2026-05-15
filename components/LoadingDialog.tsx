@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Logo } from "./Logo";
 import { Sparkles, Loader2, Search, Target, TrendingUp, PieChart, CheckCircle2, Cpu, Activity, Zap, AlertTriangle, Layers, Database, Cloud, Shield } from "lucide-react";
 
 const modeMessages = {
@@ -74,7 +75,7 @@ export default function LoadingDialog({
   return (
     <Dialog open={isOpen}>
       <DialogContent 
-        className="sm:max-w-[425px] rounded-none border-border bg-card/95 backdrop-blur-2xl overflow-hidden"
+        className="sm:max-w-[425px] rounded-none border-border bg-card/95 overflow-hidden"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">Analysis Loading</DialogTitle>
@@ -82,7 +83,10 @@ export default function LoadingDialog({
           Please wait while Ideon Intelligence analyzes your idea concept and market data.
         </DialogDescription>
         
-        <div className="relative z-10 flex flex-col">
+        <div className="relative z-10 flex flex-col pt-4">
+          <div className="px-6 mb-4">
+            <Logo size="sm" href="" />
+          </div>
           {/* System Status Area */}
           <div className="p-6 flex flex-col bg-accent/20 border-b border-border/50 relative overflow-hidden -mx-4 -mt-4">
             {/* Geometric background pattern */}
@@ -91,8 +95,8 @@ export default function LoadingDialog({
             </div>
 
             <div className="flex items-center gap-6 mb-8 relative z-10">
-              <div className="relative w-20 h-20 bg-background border-2 border-primary/30 rounded-none flex items-center justify-center shadow-2xl shrink-0 overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent animate-pulse" />
+              <div className="relative w-20 h-20 bg-background border-2 border-primary/30 rounded-none flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent z-10" />
                 <CurrentIcon className={`w-10 h-10 ${messages[currentStep].color} animate-in zoom-in-50 duration-700 relative z-10`} />
                 <div className="absolute top-0 left-0 w-full h-1 bg-primary/40 animate-scan z-20" />
               </div>

@@ -11,6 +11,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
+import { Logo } from "./Logo";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 import type { UserProfile } from "@/lib/types";
 
@@ -48,16 +49,10 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
   return (
     <Sidebar collapsible="icon" {...props} className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="p-4 group-data-[collapsible=icon]:p-2 transition-all duration-300">
-        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <div className="w-9 h-9 shrink-0 rounded-none bg-sidebar-primary flex items-center justify-center shadow-lg shadow-sidebar-primary/20">
-            <Sparkles className="w-5 h-5 text-sidebar-primary-foreground" />
-          </div>
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black tracking-tighter text-sidebar-foreground">Ideon</h2>
-              <span className="px-1.5 py-0.5 rounded-none bg-sidebar-primary/10 text-sidebar-primary text-[10px] font-bold border border-sidebar-primary/20 leading-none">v1.0</span>
-            </div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/50 font-bold">Creator Dashboard</p>
+        <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center w-full">
+          <Logo size="md" href="/dashboard" className="group-data-[collapsible=icon]:hidden" />
+          <div className="hidden group-data-[collapsible=icon]:block">
+             <Logo size="sm" showText={false} href="/dashboard" />
           </div>
         </div>
       </SidebarHeader>
@@ -107,7 +102,8 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
                  <p className="text-[9px] text-sidebar-foreground/50 font-medium truncate">Get Unlimited AI</p>
                </div>
                <Link href="/pricing">
-                  <Button size="sm" className="h-7 px-3 rounded-none bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground text-[9px] font-black uppercase tracking-widest shadow-lg shadow-sidebar-primary/10 transition-all active:scale-95">
+                                     <Button size="sm" className="h-7 px-3 rounded-none bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground text-[9px] font-black uppercase tracking-widest transition-all active:scale-95">
+
                      Pro
                   </Button>
                </Link>
@@ -117,7 +113,7 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
           <div className="group/credits relative p-4 rounded-none bg-accent/30 border border-sidebar-border mb-3 overflow-hidden transition-all hover:bg-accent/40">
             {user?.plan && user.plan !== "free" && (
               <div className="absolute top-0 right-0 p-1">
-                 <div className="w-1 h-1 rounded-none bg-sidebar-primary animate-pulse shadow-[0_0_8px_var(--sidebar-primary)]" />
+                 <div className="w-1 h-1 rounded-none bg-sidebar-primary" />
               </div>
             )}
              <div className="flex items-center justify-between mb-3">
@@ -129,7 +125,7 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
                   {user?.plan && user.plan !== "free" ? (
                     <div className="flex flex-col items-end">
                       <span className="text-[10px] font-black text-sidebar-primary uppercase tracking-widest flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 animate-pulse" />
+                        <Sparkles className="w-3 h-3" />
                         Unlimited
                       </span>
                       <span className="text-[8px] text-sidebar-foreground/40 font-bold uppercase mt-0.5">Enterprise Access</span>
@@ -137,7 +133,7 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
                   ) : (
                     <div className="flex flex-col items-end">
                       <span className="text-[11px] font-black text-sidebar-foreground uppercase tracking-tight">
-                        {user?.tokensLeft || 0} <span className="text-[9px] text-sidebar-foreground/40">/ 10</span>
+                        {user?.tokensLeft || 0} <span className="text-[9px] text-sidebar-foreground/40">/ 3</span>
                       </span>
                       <span className="text-[8px] text-sidebar-foreground/40 font-bold uppercase mt-0.5">Left Today</span>
                     </div>
@@ -148,14 +144,14 @@ export function AppSidebar({ user, ...props }: { user?: UserProfile | null } & R
              {(!user?.plan || user?.plan === "free") ? (
                <div className="relative w-full h-1.5 bg-sidebar-border rounded-none overflow-hidden">
                   <div 
-                    className="h-full bg-sidebar-primary transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--primary),0.3)]" 
-                    style={{ width: `${Math.min(100, ((user?.tokensLeft || 0) / 10) * 100)}%` }} 
+                    className="h-full bg-sidebar-primary transition-all duration-1000 ease-out" 
+                    style={{ width: `${Math.min(100, ((user?.tokensLeft || 0) / 3) * 100)}%` }} 
                   />
                </div>
              ) : (
                <div className="flex items-center gap-1.5 opacity-50">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-1 flex-1 bg-sidebar-primary/20 rounded-none animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
+                    <div key={i} className="h-1 flex-1 bg-sidebar-primary/20 rounded-none" style={{ animationDelay: `${i * 100}ms` }} />
                   ))}
                </div>
              )}

@@ -16,6 +16,8 @@ import {
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
+import { PLAN_FEATURES, PLAN_DESCRIPTIONS } from "@/lib/plan-rules";
+
 const MotionCard = motion.create(Card);
 
 export default function Pricing() {
@@ -30,7 +32,9 @@ export default function Pricing() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/plans`);
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/plans`,
+        );
         setDbPlans(res.data);
       } catch (error) {
         console.error("Failed to fetch plans", error);
@@ -42,7 +46,7 @@ export default function Pricing() {
   }, []);
 
   const getPlanData = (id: string) => {
-    const plan = dbPlans.find(p => p.id === id);
+    const plan = dbPlans.find((p) => p.id === id);
     if (!plan) return null;
 
     const planConfig: any = {
@@ -52,33 +56,10 @@ export default function Pricing() {
         buttonVariant: "secondary" as const,
         color: "text-muted-foreground",
         checkColor: "text-muted-foreground/60",
-        features: [
-          "3 AI Analyses per day",
-          "Low-level idea expansion",
-          "Roast Mode access",
-          "Basic market demand check",
-          "No Architecture Blueprint",
-        ],
-        description: "Perfect for exploring new ideas with daily limits.",
+        features: PLAN_FEATURES.free,
+        description: PLAN_DESCRIPTIONS.free,
       },
       monthly: {
-        icon: <Star className="w-6 h-6 text-primary-foreground" />,
-        iconBg: "bg-linear-to-br from-primary to-primary/60",
-        buttonVariant: "default" as const,
-        popular: true,
-        color: "text-primary",
-        checkColor: "text-primary",
-        gradient: "from-primary to-primary/40",
-        features: [
-          "Unlimited AI Analyses",
-          "High-level deep dive results",
-          "Full Architecture Blueprints",
-          "Advanced Roast Mode",
-          "Priority customer support",
-        ],
-        description: "Best for serious builders needing deep insights.",
-      },
-      yearly: {
         icon: <Star className="w-6 h-6 text-primary-foreground" />,
         iconBg: "bg-linear-to-br from-primary to-primary/60",
         buttonVariant: "default" as const,
@@ -86,14 +67,19 @@ export default function Pricing() {
         color: "text-primary",
         checkColor: "text-primary",
         gradient: "from-primary to-primary/40",
-        features: [
-          "Everything in Monthly",
-          "Highest level results",
-          "Advanced scalability strategies",
-          "Priority support access",
-          "Save 40% annually",
-        ],
-        description: "Maximum value for long-term strategic planning.",
+        features: PLAN_FEATURES.monthly,
+        description: PLAN_DESCRIPTIONS.monthly,
+      },
+      yearly: {
+        icon: <Star className="w-6 h-6 text-primary-foreground" />,
+        iconBg: "bg-linear-to-br from-primary to-primary/60",
+        buttonVariant: "default" as const,
+        popular: true,
+        color: "text-primary",
+        checkColor: "text-primary",
+        gradient: "from-primary to-primary/40",
+        features: PLAN_FEATURES.yearly,
+        description: PLAN_DESCRIPTIONS.yearly,
       },
       lifetime: {
         icon: <Sparkles className="w-6 h-6 text-accent-foreground" />,
@@ -102,15 +88,9 @@ export default function Pricing() {
         color: "text-accent",
         checkColor: "text-accent",
         gradient: "from-accent to-accent/40",
-        features: [
-          "Lifetime Access",
-          "All Pro features included",
-          "Future updates & AI models",
-          "Concierge onboarding",
-          "Ultimate builder status",
-        ],
-        description: "One-time investment for unlimited innovation.",
-      }
+        features: PLAN_FEATURES.lifetime,
+        description: PLAN_DESCRIPTIONS.lifetime,
+      },
     };
 
     return { ...plan, ...planConfig[id] };
@@ -119,12 +99,12 @@ export default function Pricing() {
   const activePlans = [
     getPlanData("free"),
     billingCycle === "monthly" ? getPlanData("monthly") : getPlanData("yearly"),
-    getPlanData("lifetime")
+    getPlanData("lifetime"),
   ].filter(Boolean);
 
   const handleSubscribe = async (planId: string, amount: string) => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       alert("Please login to upgrade your plan.");
       router.push("/login?redirect=/pricing");
@@ -216,7 +196,9 @@ export default function Pricing() {
                 >
                   <CardHeader className="p-8 pb-4">
                     <div className="flex justify-between items-start mb-6">
-                      <div className={`p-3 rounded-2xl ${plan.iconBg} shadow-sm flex items-center justify-center`}>
+                      <div
+                        className={`p-3 rounded-2xl ${plan.iconBg} shadow-sm flex items-center justify-center`}
+                      >
                         {plan.icon}
                       </div>
                       {plan.popular && (
@@ -235,8 +217,12 @@ export default function Pricing() {
 
                   <CardContent className="px-8 grow flex flex-col">
                     <div className="flex items-baseline gap-1.5 mb-8">
-                        <span className="text-4xl font-black font-mono">₹{finalPrice}</span>
-                        <span className="text-muted-foreground text-xs font-medium font-mono uppercase">{plan.period}</span>
+                      <span className="text-4xl font-black font-mono">
+                        ₹{finalPrice}
+                      </span>
+                      <span className="text-muted-foreground text-xs font-medium font-mono uppercase">
+                        {plan.period}
+                      </span>
                     </div>
 
                     <div className="space-y-4 mb-8">
@@ -270,7 +256,8 @@ export default function Pricing() {
                           <span>Processing</span>
                         </div>
                       ) : (
-                        plan.buttonText || (plan.id === 'free' ? "Start for Free" : "Get Started")
+                        plan.buttonText ||
+                        (plan.id === "free" ? "Start for Free" : "Get Started")
                       )}
                     </Button>
                   </CardFooter>

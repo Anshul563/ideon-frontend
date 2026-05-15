@@ -51,7 +51,7 @@ export default function RoastResult({ data }: { data: AnalysisResult | null }) {
         {result.roasts?.map((roast: RoastItem, i: number) => (
           <div key={i} className="group relative">
             <div className="absolute inset-0 bg-linear-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]" />
-            <div className="relative p-8 rounded-[32px] bg-card/40 border border-border shadow-lg transition-all group-hover:-translate-y-2 group-hover:border-orange-500/30">
+            <div className="relative p-8 rounded-[32px] bg-card/40 border border-border transition-all group-hover:-translate-y-2 group-hover:border-orange-500/30">
               <div className="flex items-start gap-4 mb-4">
                 <div className="p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20">
                   {i % 2 === 0 ? <Ghost className="w-6 h-6 text-orange-500" /> : <Trash2 className="w-6 h-6 text-orange-500" />}

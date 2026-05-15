@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, UserPlus, Brain, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, UserPlus, ArrowRight, Sparkles } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -42,19 +43,13 @@ export default function Register() {
       {/* Dynamic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[40px_40px]" />
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5" />
       </div>
 
-      <Link href="/" className="absolute top-10 left-10 flex items-center gap-3 group z-20">
-        <div className="w-10 h-10 rounded-none bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-          <Brain className="w-6 h-6 text-primary-foreground" />
-        </div>
-        <div className="flex flex-col">
-            <h1 className="text-2xl font-black tracking-tighter text-foreground leading-none">Ideon</h1>
-            <span className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] mt-1">Intelligence</span>
-        </div>
-      </Link>
+      <div className="absolute top-10 left-10 z-20">
+        <Logo size="md" />
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -64,12 +59,12 @@ export default function Register() {
       >
         <div className="absolute -top-1 border-t-2 border-primary w-20 z-20" />
         
-        <Card className="rounded-none border-border bg-card/60 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden">
+        <Card className="rounded-none border-border bg-card/60 overflow-hidden">
           <CardHeader className="text-center pt-16 pb-10 border-b border-border/50">
             <div className="flex justify-center mb-8">
-              <div className="w-16 h-16 rounded-none bg-primary/5 flex items-center justify-center border border-primary/20 shadow-inner relative group">
+              <div className="w-16 h-16 rounded-none bg-primary/5 flex items-center justify-center border border-primary/20 relative group">
                 <UserPlus className="w-7 h-7 text-primary" />
-                <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-primary animate-pulse" />
+                <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-primary" />
               </div>
             </div>
             <CardTitle className="text-5xl font-black tracking-[ -0.05em] text-foreground uppercase leading-none">
@@ -135,7 +130,7 @@ export default function Register() {
             <Button
               onClick={handleRegister}
               disabled={loading}
-              className="w-full h-16 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl shadow-primary/20 transition-all active:scale-95 gap-3 group/btn relative overflow-hidden"
+              className="w-full h-16 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none text-[11px] font-black uppercase tracking-[0.4em] transition-all active:scale-95 gap-3 group/btn relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               {loading ? (

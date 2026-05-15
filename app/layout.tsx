@@ -26,11 +26,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
-        <div className="fixed inset-0 z-[-1] pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[120px]" />
-          <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-accent/10 blur-[100px]" />
-        </div>
+        <div className="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(#80808012_1px,transparent_1px)] bg-size-[40px_40px] opacity-20" />
 
         <ThemeProvider
           attribute="class"

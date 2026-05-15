@@ -9,12 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ArrowRight, Brain, ShieldCheck, Sparkles, Lock } from "lucide-react";
+import { Loader2, ArrowRight, ShieldCheck, Sparkles, Lock, Construction } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { ComingSoonDialog } from "@/components/ComingSoonDialog";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
+  const [comingSoonConfig, setComingSoonConfig] = useState({ 
+    feature: "", 
+    description: "", 
+    icon: Construction 
+  });
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -48,25 +56,26 @@ export default function Login() {
 
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center relative px-6 py-12 overflow-hidden selection:bg-primary/30">
+      <ComingSoonDialog 
+        isOpen={isComingSoonOpen} 
+        onOpenChange={setIsComingSoonOpen} 
+        featureName={comingSoonConfig.feature} 
+        description={comingSoonConfig.description}
+        icon={comingSoonConfig.icon}
+      />
       {/* Dynamic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[40px_40px]" />
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5" />
       </div>
 
-      <Link href="/" className="absolute top-10 left-10 flex items-center gap-3 group z-20">
-        <div className="w-10 h-10 rounded-none bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-          <Brain className="w-6 h-6 text-primary-foreground" />
-        </div>
-        <div className="flex flex-col">
-            <h1 className="text-2xl font-black tracking-tighter text-foreground leading-none">Ideon</h1>
-            <span className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] mt-1">Intelligence</span>
-        </div>
-      </Link>
+      <div className="absolute top-10 left-10 z-20">
+        <Logo size="md" />
+      </div>
 
-      <div className="absolute top-10 right-10 hidden md:flex items-center gap-2 px-4 py-2 border border-border bg-card/50 backdrop-blur-md">
-        <div className="w-2 h-2 bg-emerald-500 animate-pulse" />
+      <div className="absolute top-10 right-10 hidden md:flex items-center gap-2 px-4 py-2 border border-border bg-card/50">
+        <div className="w-2 h-2 bg-emerald-500" />
         <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">System Online</span>
       </div>
 
@@ -78,10 +87,10 @@ export default function Login() {
       >
         <div className="absolute -top-1 border-t-2 border-primary w-20 z-20" />
         
-        <Card className="rounded-none border-border bg-card/60 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden">
+        <Card className="rounded-none border-border bg-card/60 overflow-hidden">
           <CardHeader className="text-center pt-16 pb-10 border-b border-border/50">
             <div className="flex justify-center mb-8">
-              <div className="w-16 h-16 rounded-none bg-accent/10 flex items-center justify-center border border-border shadow-inner relative group">
+              <div className="w-16 h-16 rounded-none bg-accent/10 flex items-center justify-center border border-border relative group">
                 <Lock className="w-7 h-7 text-primary" />
                 <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -113,7 +122,17 @@ export default function Login() {
                    <span className="w-1.5 h-1.5 bg-primary/40" />
                    Pass-Key
                 </Label>
-                <button className="text-[9px] font-black text-primary uppercase tracking-[0.2em] hover:text-primary/70 transition-colors">
+                <button 
+                  onClick={() => {
+                    setComingSoonConfig({
+                      feature: "Account Recovery",
+                      description: "Our secure biometric and multi-factor recovery systems are being finalized for production.",
+                      icon: Lock
+                    });
+                    setIsComingSoonOpen(true);
+                  }}
+                  className="text-[9px] font-black text-primary uppercase tracking-[0.2em] hover:text-primary/70 transition-colors"
+                >
                   Lost Key?
                 </button>
               </div>
@@ -128,7 +147,7 @@ export default function Login() {
             <Button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full h-16 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl shadow-primary/20 transition-all active:scale-95 gap-3 group/btn relative overflow-hidden"
+              className="w-full h-16 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none text-[11px] font-black uppercase tracking-[0.4em] transition-all active:scale-95 gap-3 group/btn relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               {loading ? (

@@ -22,8 +22,8 @@ export default function StressResult({ data }: { data: AnalysisResult | null }) 
     <div className="w-full max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
       
       {/* Brutal Verdict Header */}
-      <div className="relative overflow-hidden rounded-[48px] bg-destructive/10 backdrop-blur-3xl border border-destructive/20 p-10 md:p-16 shadow-3xl">
-        <div className="absolute top-0 right-0 p-12 opacity-20 blur-[120px] pointer-events-none">
+      <div className="relative overflow-hidden rounded-[48px] bg-destructive/10 border border-destructive/20 p-10 md:p-16">
+        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
           <div className="w-96 h-96 bg-destructive rounded-full" />
         </div>
         
@@ -48,7 +48,7 @@ export default function StressResult({ data }: { data: AnalysisResult | null }) 
           </div>
           <div className="space-y-4">
             {result.failure_reasons?.map((reason: RiskItem, i: number) => (
-              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-destructive/30 transition-all">
+              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border group hover:border-destructive/30 transition-all">
                 <div className="flex items-start gap-4">
                   <XCircle className="w-6 h-6 text-destructive shrink-0 mt-1" />
                   <div>
@@ -71,7 +71,7 @@ export default function StressResult({ data }: { data: AnalysisResult | null }) 
           </div>
           <div className="space-y-4">
             {result.market_risks?.map((risk: RiskItem, i: number) => (
-              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-orange-500/30 transition-all">
+              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border group hover:border-orange-500/30 transition-all">
                 <div className="flex items-start gap-4">
                   <AlertTriangle className="w-6 h-6 text-orange-500 shrink-0 mt-1" />
                   <div>
@@ -94,7 +94,7 @@ export default function StressResult({ data }: { data: AnalysisResult | null }) 
           </div>
           <div className="space-y-4">
             {result.execution_challenges?.map((challenge: RiskItem, i: number) => (
-              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border shadow-lg group hover:border-foreground/30 transition-all">
+              <div key={i} className="p-6 rounded-[32px] bg-card/40 border border-border group hover:border-foreground/30 transition-all">
                 <div className="flex items-start gap-4">
                   <ShieldAlert className="w-6 h-6 text-muted-foreground shrink-0 mt-1" />
                   <div>

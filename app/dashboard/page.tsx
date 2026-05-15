@@ -26,6 +26,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import type { PaymentVerification } from "@/lib/types";
+import { useUserPlan } from "@/hooks/useUserPlan";
 
 function DashboardContent() {
   const [idea, setIdea] = useState("");
@@ -94,7 +95,15 @@ function DashboardContent() {
     router.replace("/dashboard");
   };
 
+  const { isPaid, tokensLeft, loading: planLoading } = useUserPlan();
+
   const handleAnalyze = async (mode: "full" | "stress" | "roast" = "full") => {
+    if (!isPaid && tokensLeft <= 0) {
+      alert("Intelligence Quota Depleted. Upgrade to Pro for unlimited scans.");
+      router.push("/pricing");
+      return;
+    }
+
     setAnalysisMode(mode);
     setLoading(true);
 
@@ -173,10 +182,10 @@ function DashboardContent() {
           <DialogFooter className="sm:justify-center pb-6">
             <Button 
               onClick={handleCloseDialog}
-              className={`w-full h-14 rounded-none text-lg font-bold shadow-xl transition-all active:scale-95 ${
+              className={`w-full h-14 rounded-none text-lg font-bold transition-all active:scale-95 ${
                 paymentStatus === 'success' 
-                  ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/20' 
-                  : 'bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20'
+                  ? 'bg-emerald-500 hover:bg-emerald-400 text-white' 
+                  : 'bg-rose-500 hover:bg-rose-400 text-white'
               }`}
             >
               Return to Dashboard
@@ -194,7 +203,7 @@ function DashboardContent() {
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-none bg-secondary/20 border border-secondary/30">
-            <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-none bg-emerald-500" />
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">AI Engine Online</span>
           </div>
         </div>
@@ -202,7 +211,7 @@ function DashboardContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Analysis Section */}
-        <Card className="lg:col-span-2 border-none bg-card/50 backdrop-blur-3xl shadow-2xl overflow-hidden rounded-none">
+        <Card className="lg:col-span-2 border-none bg-card/50 overflow-hidden rounded-none">
           <CardHeader className="p-8 pb-4">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -302,7 +311,7 @@ function DashboardContent() {
                 <Button
                   onClick={() => handleAnalyze("full")}
                   disabled={loading || !idea.trim()}
-                  className="h-12 bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-none font-bold shadow-lg shadow-primary/20 flex-1 sm:flex-none group"
+                  className="h-12 bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-none font-bold flex-1 sm:flex-none group"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                     <>
@@ -318,7 +327,7 @@ function DashboardContent() {
 
         {/* Sidebar Info Section */}
         <div className="space-y-6">
-          <Card className="border-none bg-secondary/10 backdrop-blur-xl rounded-none">
+          <Card className="border-none bg-secondary/10 rounded-none">
             <CardHeader className="p-6 pb-2">
               <CardTitle className="text-lg font-bold flex items-center gap-2">
                 <Briefcase className="w-4 h-4 text-primary" />

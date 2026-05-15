@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+import { UserProfile } from "@/lib/types";
+
 export function useUserPlan() {
-  const [plan, setPlan] = useState<string>("free");
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export function useUserPlan() {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setPlan(res.data.plan || "free");
+        setUser(res.data);
       } catch (error) {
         console.error("Failed to fetch profile", error);
       } finally {
@@ -26,5 +28,11 @@ export function useUserPlan() {
     fetchProfile();
   }, []);
 
-  return { plan, loading, isPaid: plan !== "free" };
+  return { 
+    user,
+    plan: user?.plan || "free", 
+    loading, 
+    isPaid: user?.plan !== "free",
+    tokensLeft: user?.tokensLeft ?? 0
+  };
 }

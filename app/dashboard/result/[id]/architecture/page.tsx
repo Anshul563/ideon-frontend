@@ -53,6 +53,7 @@ import {
   CheckCircle2,
   Table,
   Columns,
+  Construction,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import LoadingDialog from "@/components/LoadingDialog";
@@ -60,6 +61,8 @@ import type { IdeaRecord } from "@/lib/types";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { Sparkles } from "lucide-react";
 import { ComingSoonDialog } from "@/components/ComingSoonDialog";
+import { Logo } from "@/components/Logo";
+import Link from "next/link";
 
 // --- Custom Components ---
 
@@ -207,7 +210,11 @@ export default function ArchitecturePage() {
   const { theme, setTheme } = useTheme();
   const { isPaid, loading: planLoading } = useUserPlan();
   const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
-  const [comingSoonFeature, setComingSoonFeature] = useState("");
+  const [comingSoonConfig, setComingSoonConfig] = useState({ 
+    feature: "", 
+    description: "", 
+    icon: Construction 
+  });
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
@@ -221,6 +228,63 @@ export default function ArchitecturePage() {
       setIsFullscreen(false);
     }
   };
+
+  if (planLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isPaid) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Technical Background */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#80808044_1px,transparent_1px)] bg-size-[32px_32px]" />
+        
+        <div className="max-w-xl w-full bg-card border border-border p-1 relative reveal">
+          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary" />
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary" />
+          
+          <div className="bg-background p-12 flex flex-col items-center text-center space-y-8 border border-border">
+            <div className="w-20 h-20 bg-primary/5 border border-primary/20 flex items-center justify-center relative">
+              <Lock className="w-10 h-10 text-primary" />
+              <div className="absolute inset-0 border border-primary/10 animate-ping opacity-20" />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-black uppercase tracking-widest">
+                <AlertTriangle className="w-3 h-3" />
+                Security Protocol Restricted
+              </div>
+              <h2 className="text-4xl font-black tracking-tighter uppercase leading-tight">
+                Blueprint Access <br /> 
+                <span className="text-primary">Denied.</span>
+              </h2>
+              <p className="text-muted-foreground font-medium text-sm leading-relaxed">
+                The Architecture Blueprint protocol is exclusively reserved for Paid Intelligence tiers. Upgrade to access high-fidelity infrastructure schemas and database maps.
+              </p>
+            </div>
+            
+            <div className="w-full flex flex-col gap-4">
+              <Link href="/pricing" className="w-full py-5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.4em] hover:bg-primary/90 transition-all flex items-center justify-center gap-3">
+                <Zap className="w-4 h-4 fill-current" />
+                Unlock Full Protocol
+              </Link>
+              <Button 
+                variant="ghost" 
+                onClick={() => router.back()}
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-foreground"
+              >
+                Return to Analysis
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleFullscreenChange = () =>
@@ -543,10 +607,12 @@ export default function ArchitecturePage() {
       <ComingSoonDialog 
         isOpen={isComingSoonOpen} 
         onOpenChange={setIsComingSoonOpen} 
-        featureName={comingSoonFeature} 
+        featureName={comingSoonConfig.feature} 
+        description={comingSoonConfig.description}
+        icon={comingSoonConfig.icon}
       />
       {/* Dynamic Header */}
-      <header className="h-20 border-b-2 border-border px-4 md:px-8 flex items-center justify-between bg-card/80 backdrop-blur-2xl z-20 sticky top-0">
+      <header className="h-20 border-b-2 border-border px-4 md:px-8 flex items-center justify-between bg-card/80 z-20 sticky top-0">
         <div className="flex items-center gap-6">
           <Button
             variant="outline"
@@ -557,18 +623,11 @@ export default function ArchitecturePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Terminal
           </Button>
-          <div className="h-10 w-[2px] bg-border/50 rotate-20" />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
-              <Terminal className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                Blueprint Engine v2.0
-              </span>
-            </div>
-            <h1 className="font-black tracking-tighter text-lg md:text-2xl truncate max-w-[120px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-[400px]">
-              {data?.idea}
-            </h1>
-          </div>
+          <Logo size="sm" href="/dashboard" />
+          <div className="h-8 w-px bg-border/50 hidden md:block" />
+          <h1 className="font-black tracking-tighter text-lg md:text-xl truncate max-w-[120px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-[400px]">
+            {data?.idea}
+          </h1>
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
@@ -576,7 +635,11 @@ export default function ArchitecturePage() {
             variant="outline"
             size="icon"
             onClick={() => {
-              setComingSoonFeature("Blueprint Sharing");
+              setComingSoonConfig({
+                feature: "Blueprint Sharing",
+                description: "We are fine-tuning secure sharing protocols to ensure your architectural blueprints remain private and protected.",
+                icon: Share2
+              });
               setIsComingSoonOpen(true);
             }}
             className="rounded-none border-2 border-border h-10 w-10 shrink-0 hover:bg-primary hover:text-primary-foreground transition-all"
@@ -598,10 +661,14 @@ export default function ArchitecturePage() {
           <Button
             variant="default"
             onClick={() => {
-              setComingSoonFeature("Infrastructure Deployment");
+              setComingSoonConfig({
+                feature: "Infrastructure Deployment",
+                description: "Automated Terraform and CloudFormation generation is being integrated into our core engine.",
+                icon: Cpu
+              });
               setIsComingSoonOpen(true);
             }}
-            className="rounded-none bg-primary text-primary-foreground font-black uppercase tracking-widest px-3 md:px-6 h-10 shadow-[4px_4px_0px_var(--primary-foreground)] border-2 border-primary active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1.5 shrink-0"
+            className="rounded-none bg-primary text-primary-foreground font-black uppercase tracking-widest px-3 md:px-6 h-10 border-2 border-primary active:translate-x-[2px] active:translate-y-[2px] transition-all mr-1.5 shrink-0"
           >
             Deploy Infra
           </Button>

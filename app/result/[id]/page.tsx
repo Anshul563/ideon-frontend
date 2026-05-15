@@ -16,12 +16,14 @@ import {
   Flame, 
   BarChart4,
   Skull,
-  ShieldCheck
+  ShieldCheck,
+  Construction
 } from "lucide-react";
 import LoadingDialog from "../../../components/LoadingDialog";
 import { ComingSoonDialog } from "../../../components/ComingSoonDialog";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { Lock } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import type {
   BetterVersion,
   Competitor,
@@ -39,6 +41,11 @@ export default function ResultPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"full" | "stress" | "roast">("full");
   const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
+  const [comingSoonConfig, setComingSoonConfig] = useState({ 
+    feature: "", 
+    description: "", 
+    icon: Construction 
+  });
   const { isPaid } = useUserPlan();
 
   useEffect(() => {
@@ -397,7 +404,7 @@ export default function ResultPage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-primary animate-spin" />
-          <p className="text-muted-foreground font-medium animate-pulse">Retrieving your analysis...</p>
+          <p className="text-muted-foreground font-medium">Retrieving your analysis...</p>
         </div>
       </div>
     );
@@ -426,14 +433,14 @@ export default function ResultPage() {
         <div className="relative mb-12">
           <div className="w-32 h-32 rounded-none border-4 border-primary/20 border-t-primary animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-10 h-10 text-primary animate-pulse" />
+            <Sparkles className="w-10 h-10 text-primary" />
           </div>
         </div>
         <h2 className="text-3xl font-black text-foreground mb-4 tracking-tight uppercase">AI Engine Processing</h2>
         <div className="max-w-md w-full bg-accent/30 border border-border p-6 rounded-none space-y-4">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">
             <span>Status</span>
-            <span className="text-primary animate-pulse">Running Pipeline...</span>
+            <span className="text-primary">Running Pipeline...</span>
           </div>
           <div className="h-1.5 w-full bg-secondary/30 rounded-none overflow-hidden">
             <div className="h-full bg-primary animate-progress-indefinite" />
@@ -459,20 +466,26 @@ export default function ResultPage() {
       <ComingSoonDialog 
         isOpen={isComingSoonOpen} 
         onOpenChange={setIsComingSoonOpen} 
-        featureName="Report Sharing" 
+        featureName={comingSoonConfig.feature} 
+        description={comingSoonConfig.description}
+        icon={comingSoonConfig.icon}
       />
       <LoadingDialog isOpen={isAnalyzing} mode={analysisMode} idea={data.idea} />
       
       <div className="max-w-6xl mx-auto px-4 md:px-6 pt-8 md:pt-12">
         <nav className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-8 md:mb-12">
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/dashboard")}
-            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors self-start"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-medium">Dashboard</span>
-          </Button>
+          <div className="flex items-center gap-4">
+            <Logo size="sm" href="/dashboard" />
+            <div className="h-8 w-px bg-border/50" />
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/dashboard")}
+              className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors self-start"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="font-medium">Dashboard</span>
+            </Button>
+          </div>
 
           <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
             {/* Toggle Button Group */}
@@ -483,7 +496,7 @@ export default function ResultPage() {
                 onClick={() => handleSwitchMode("full")}
                 className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "full" 
-                    ? "bg-primary text-primary-foreground shadow-lg hover:bg-primary/90" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
@@ -496,7 +509,7 @@ export default function ResultPage() {
                 onClick={() => handleSwitchMode("stress")}
                 className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "stress" 
-                    ? "bg-rose-500 text-white shadow-lg hover:bg-rose-600" 
+                    ? "bg-rose-500 text-white hover:bg-rose-600" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
@@ -509,7 +522,7 @@ export default function ResultPage() {
                 onClick={() => handleSwitchMode("roast")}
                 className={`rounded-none px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
                   data.mode === "roast" 
-                    ? "bg-orange-500 text-white shadow-lg hover:bg-orange-600" 
+                    ? "bg-orange-500 text-white hover:bg-orange-600" 
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 }`}
               >
@@ -528,10 +541,10 @@ export default function ResultPage() {
                 }
                 router.push(`/dashboard/result/${id}/architecture`);
               }}
-              className={`rounded-none font-bold px-4 h-9 shadow-lg transition-all shrink-0 whitespace-nowrap ${
+              className={`rounded-none font-bold px-4 h-9 transition-all shrink-0 whitespace-nowrap ${
                 isPaid 
-                  ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20" 
-                  : "bg-muted text-muted-foreground border-border shadow-none"
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white" 
+                  : "bg-muted text-muted-foreground border-border"
               }`}
             >
               {!isPaid && <Lock className="w-3.5 h-3.5 mr-2" />}
@@ -545,7 +558,14 @@ export default function ResultPage() {
               <Button 
                 variant="outline" 
                 size="icon" 
-                onClick={() => setIsComingSoonOpen(true)}
+                onClick={() => {
+                  setComingSoonConfig({
+                    feature: "Report Sharing",
+                    description: "High-fidelity PDF and interactive web report sharing is scheduled for the next major release.",
+                    icon: Share2
+                  });
+                  setIsComingSoonOpen(true);
+                }}
                 className="h-9 w-9 bg-accent/50 hover:bg-accent border-border rounded-none text-muted-foreground hover:text-foreground transition-all"
               >
                 <Share2 className="w-4 h-4" />

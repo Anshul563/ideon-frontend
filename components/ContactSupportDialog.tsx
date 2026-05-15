@@ -185,7 +185,7 @@ export function ContactSupportDialog({ user, trigger, open: controlledOpen, onOp
               <DialogFooter>
                 <Button 
                   type="submit" 
-                  className="w-full rounded-none font-black uppercase tracking-widest h-12 shadow-lg shadow-primary/20"
+                  className="w-full rounded-none font-black uppercase tracking-widest h-12"
                   disabled={loading}
                 >
                   {loading ? (

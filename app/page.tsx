@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import axios from "axios";
 import { motion, useInView } from "framer-motion";
 import {
   Brain,
@@ -26,6 +27,7 @@ import { useGSAP } from "@gsap/react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import { PLAN_FEATURES, PLAN_METADATA } from "@/lib/plan-rules";
 import type { LucideIcon } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -35,6 +37,19 @@ if (typeof window !== "undefined") {
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const [dbPlans, setDbPlans] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/plans`);
+        setDbPlans(res.data);
+      } catch (error) {
+        console.error("Failed to fetch plans", error);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   useGSAP(
     () => {
@@ -101,8 +116,8 @@ export default function Home() {
         </div>
         
         <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-background via-transparent to-background" />
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5" />
       </div>
 
       {/* Hero Section */}
@@ -115,9 +130,9 @@ export default function Home() {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-3 px-5 py-2 bg-primary/5 border border-primary/20 backdrop-blur-md mb-12"
+                className="inline-flex items-center gap-3 px-5 py-2 bg-primary/5 border border-primary/20 mb-12"
               >
-                <div className="w-2 h-2 bg-primary animate-pulse" />
+                <div className="w-2 h-2 bg-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Ideon Protocol v1.0 Activated</span>
               </motion.div>
 
@@ -138,7 +153,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <Link
                   href="/register"
-                  className="group relative px-12 py-6 bg-primary text-primary-foreground font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all overflow-hidden"
+                  className="group relative px-12 py-6 bg-primary text-primary-foreground font-black uppercase tracking-[0.3em] text-xs hover:scale-105 active:scale-95 transition-all overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   <span className="relative z-10 flex items-center gap-3">
@@ -242,7 +257,8 @@ export default function Home() {
               </div>
 
               <div className="relative reveal">
-                 <div className="absolute inset-0 bg-primary/10 blur-[100px] -z-10" />
+                                   <div className="absolute inset-0 bg-primary/5 -z-10" />
+
                  <div className="border border-border bg-card p-1">
                     <div className="border border-border bg-background p-8 aspect-square flex flex-col justify-between overflow-hidden relative group">
                        <div className="flex justify-between items-start">
@@ -251,7 +267,7 @@ export default function Home() {
                              <div className="text-2xl font-black tracking-tighter">DATA ANALYTICS</div>
                           </div>
                           <div className="w-10 h-10 border border-border flex items-center justify-center">
-                             <Activity className="w-4 h-4 animate-pulse" />
+                             <Activity className="w-4 h-4" />
                           </div>
                        </div>
                        
@@ -268,7 +284,7 @@ export default function Home() {
                                        initial={{ width: 0 }}
                                        whileInView={{ width: `${w}%` }}
                                        transition={{ duration: 1.5, delay: i * 0.2 }}
-                                       className="h-full bg-primary shadow-[0_0_10px_var(--primary)]" 
+                                       className="h-full bg-primary" 
                                      />
                                   </div>
                                </div>
@@ -358,76 +374,152 @@ export default function Home() {
               <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">Choose the intelligence protocol that matches your strategic ambitions.</p>
            </div>
 
-           <div className="grid md:grid-cols-3 gap-8">
-              {/* Starter */}
-              <div className="reveal group border border-border bg-card p-1">
-                 <div className="bg-background p-10 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
-                    <div className="mb-8">
-                       <h3 className="text-xl font-black uppercase tracking-tight mb-1">Starter</h3>
-                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Basic Validation</p>
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+              {/* Starter / Free */}
+              {(() => {
+                 const freePlan = dbPlans.find(p => p.id === 'free') || { amount: '0', period: '/ Forever', features: PLAN_FEATURES.free };
+                 return (
+                    <div className="reveal group border border-border bg-card p-1 relative flex flex-col">
+                       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/40 z-20" />
+                       <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40 z-20" />
+                       
+                       <div className="bg-background p-8 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
+                          <div className="mb-6">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                   <h3 className="text-xl font-black uppercase tracking-tight mb-1">{PLAN_METADATA.free.tierName}</h3>
+                                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{PLAN_METADATA.free.tagline}</p>
+                                </div>
+                                <div className="text-[9px] font-mono text-muted-foreground/30">[PROTOCOL_{PLAN_METADATA.free.protocolId}]</div>
+                             </div>
+                          </div>
+                          <div className="mb-8">
+                             <span className="text-4xl font-black tracking-tighter">₹{freePlan.amount}</span>
+                             <span className="text-muted-foreground font-bold ml-2 text-xs">{freePlan.period}</span>
+                          </div>
+                          <ul className="space-y-3 mb-10 flex-1">
+                             {PLAN_FEATURES.free.map((f: string, i: number) => (
+                                <PricingFeature key={i} text={f} disabled={f.toLowerCase().includes('support') || f.toLowerCase().includes('blueprint')} />
+                             ))}
+                          </ul>
+                          <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
+                             Deploy {PLAN_METADATA.free.tierName}
+                          </Link>
+                       </div>
                     </div>
-                    <div className="mb-10">
-                       <span className="text-5xl font-black tracking-tighter">$0</span>
-                       <span className="text-muted-foreground font-bold ml-2">/ Forever</span>
-                    </div>
-                    <ul className="space-y-4 mb-12 flex-1">
-                       <PricingFeature text="10 Credits per Day" />
-                       <PricingFeature text="Basic Idea Lab Access" />
-                       <PricingFeature text="Standard Processing Speed" />
-                       <PricingFeature text="Community Support" disabled />
-                    </ul>
-                    <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
-                       Deploy Starter
-                    </Link>
-                 </div>
-              </div>
+                 );
+              })()}
 
-              {/* Pro */}
-              <div className="reveal group border-2 border-primary bg-primary/5 p-1 relative scale-105 shadow-[0_0_50px_rgba(var(--primary),0.1)] z-20">
-                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest">
-                    Most Deployed
-                 </div>
-                 <div className="bg-background p-10 h-full flex flex-col border border-primary/20">
-                    <div className="mb-8">
-                       <h3 className="text-xl font-black uppercase tracking-tight mb-1 text-primary">Pro</h3>
-                       <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Strategic Dominance</p>
-                    </div>
-                    <div className="mb-10">
-                       <span className="text-5xl font-black tracking-tighter">$29</span>
-                       <span className="text-muted-foreground font-bold ml-2">/ Month</span>
-                    </div>
-                    <ul className="space-y-4 mb-12 flex-1">
-                       <PricingFeature text="Unlimited AI Credits" highlight />
-                       <PricingFeature text="Full Access to Roast Mode" highlight />
-                       <PricingFeature text="Deep Stress Testing" highlight />
-                       <PricingFeature text="Priority Intelligence Queue" highlight />
-                       <PricingFeature text="Dedicated Support" highlight />
-                    </ul>
-                    <Link href="/register" className="w-full py-5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.4em] text-center hover:bg-primary/90 transition-all shadow-xl shadow-primary/20">
-                       Upgrade to Pro
-                    </Link>
-                 </div>
-              </div>
+              {/* Pro / Monthly */}
+              {(() => {
+                 const proPlan = dbPlans.find(p => p.id === 'monthly') || { amount: '29', period: '/ Month', features: PLAN_FEATURES.monthly };
+                 return (
+                    <div className="reveal group border border-border bg-card p-1 relative flex flex-col">
+                       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/40 z-20" />
+                       <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40 z-20" />
 
-              {/* Enterprise */}
-              <div className="reveal group border border-border bg-card p-1">
-                 <div className="bg-background p-10 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
-                    <div className="mb-8">
-                       <h3 className="text-xl font-black uppercase tracking-tight mb-1">Enterprise</h3>
-                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Custom Intelligence</p>
+                       <div className="bg-background p-8 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
+                          <div className="mb-6">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                   <h3 className="text-xl font-black uppercase tracking-tight mb-1">{PLAN_METADATA.monthly.tierName}</h3>
+                                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{PLAN_METADATA.monthly.tagline}</p>
+                                </div>
+                                <div className="text-[9px] font-mono text-muted-foreground/30">[PROTOCOL_{PLAN_METADATA.monthly.protocolId}]</div>
+                             </div>
+                          </div>
+                          <div className="mb-8">
+                             <span className="text-4xl font-black tracking-tighter">₹{proPlan.amount}</span>
+                             <span className="text-muted-foreground font-bold ml-2 text-xs">{proPlan.period}</span>
+                          </div>
+                          <ul className="space-y-3 mb-10 flex-1">
+                             {PLAN_FEATURES.monthly.map((f: string, i: number) => (
+                                <PricingFeature key={i} text={f} />
+                             ))}
+                          </ul>
+                          <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
+                             Deploy {PLAN_METADATA.monthly.tierName}
+                          </Link>
+                       </div>
                     </div>
-                    <div className="mb-10 text-3xl font-black tracking-tighter">Custom</div>
-                    <ul className="space-y-4 mb-12 flex-1">
-                       <PricingFeature text="Custom AI Training" />
-                       <PricingFeature text="API Command Access" />
-                       <PricingFeature text="Private Data Vaults" />
-                       <PricingFeature text="Dedicated Strategist" />
-                    </ul>
-                    <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
-                       Contact Intel
-                    </Link>
-                 </div>
-              </div>
+                 );
+              })()}
+
+              {/* Ultimate / Yearly */}
+              {(() => {
+                 const yearlyPlan = dbPlans.find(p => p.id === 'yearly') || { amount: '199', period: '/ Year', features: PLAN_FEATURES.yearly };
+                 return (
+                    <div className="reveal group border-2 border-primary bg-primary/5 p-1 relative flex flex-col z-20">
+                       <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary z-20" />
+                       <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary z-20" />
+
+                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                          Most Deployed
+                       </div>
+                       <div className="bg-background p-8 h-full flex flex-col border border-primary/20">
+                          <div className="mb-6">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                   <h3 className="text-xl font-black uppercase tracking-tight mb-1 text-primary">{PLAN_METADATA.yearly.tierName}</h3>
+                                   <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{PLAN_METADATA.yearly.tagline}</p>
+                                </div>
+                                <div className="text-[9px] font-mono text-primary/40">[PROTOCOL_{PLAN_METADATA.yearly.protocolId}]</div>
+                             </div>
+                          </div>
+                          <div className="mb-8">
+                             <span className="text-4xl font-black tracking-tighter">₹{yearlyPlan.amount}</span>
+                             <span className="text-muted-foreground font-bold ml-2 text-xs">{yearlyPlan.period}</span>
+                          </div>
+                          <ul className="space-y-3 mb-10 flex-1">
+                             {PLAN_FEATURES.yearly.map((f: string, i: number) => (
+                                <PricingFeature key={i} text={f} highlight />
+                             ))}
+                          </ul>
+                          <Link href="/register" className="w-full py-5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-[0.4em] text-center hover:bg-primary/90 transition-all overflow-hidden relative group/btn">
+                             <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+                             <span className="relative z-10">Upgrade to {PLAN_METADATA.yearly.tierName}</span>
+                          </Link>
+                       </div>
+                    </div>
+                 );
+              })()}
+
+              {/* Enterprise / Lifetime */}
+              {(() => {
+                 const entPlan = dbPlans.find(p => p.id === 'lifetime') || { amount: 'Custom', period: '', features: PLAN_FEATURES.lifetime };
+                 return (
+                    <div className="reveal group border border-border bg-card p-1 relative flex flex-col">
+                       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/40 z-20" />
+                       <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40 z-20" />
+
+                       <div className="bg-background p-8 h-full flex flex-col border border-border transition-all group-hover:border-primary/20">
+                          <div className="mb-6">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                   <h3 className="text-xl font-black uppercase tracking-tight mb-1">{PLAN_METADATA.lifetime.tierName}</h3>
+                                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{PLAN_METADATA.lifetime.tagline}</p>
+                                </div>
+                                <div className="text-[9px] font-mono text-muted-foreground/30">[PROTOCOL_{PLAN_METADATA.lifetime.protocolId}]</div>
+                             </div>
+                          </div>
+                          <div className="mb-8">
+                             <span className="text-4xl font-black tracking-tighter">
+                                {entPlan.amount === 'Custom' ? 'Custom' : `₹${entPlan.amount}`}
+                             </span>
+                             <span className="text-muted-foreground font-bold ml-2 text-xs">One-time</span>
+                          </div>
+                          <ul className="space-y-3 mb-10 flex-1">
+                             {PLAN_FEATURES.lifetime.map((f: string, i: number) => (
+                                <PricingFeature key={i} text={f} />
+                             ))}
+                          </ul>
+                          <Link href="/register" className="w-full py-4 border border-border bg-background text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-accent/10 transition-all">
+                             Deploy {PLAN_METADATA.lifetime.tierName}
+                          </Link>
+                       </div>
+                    </div>
+                 );
+              })()}
            </div>
         </div>
       </section>
@@ -441,7 +533,7 @@ export default function Home() {
             </h2>
             <Link
               href="/register"
-              className="inline-block px-16 py-8 bg-foreground text-background font-black uppercase tracking-[0.4em] text-sm hover:bg-primary hover:text-primary-foreground transition-all hover:scale-110 active:scale-95 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)]"
+              className="inline-block px-16 py-8 bg-foreground text-background font-black uppercase tracking-[0.4em] text-sm hover:bg-primary hover:text-primary-foreground transition-all hover:scale-110 active:scale-95"
             >
               Analyze Your Idea Now
             </Link>
@@ -456,7 +548,9 @@ export default function Home() {
 function PricingFeature({ text, highlight, disabled }: { text: string; highlight?: boolean; disabled?: boolean }) {
   return (
     <li className={`flex items-center gap-3 text-[11px] font-bold uppercase tracking-tight ${disabled ? "opacity-20" : highlight ? "text-foreground" : "text-muted-foreground"}`}>
-      <CheckCircle2 className={`w-4 h-4 ${disabled ? "text-muted-foreground" : highlight ? "text-primary" : "text-border"}`} />
+      <div className={`w-3.5 h-3.5 border-2 flex items-center justify-center shrink-0 ${disabled ? "border-muted-foreground/20" : highlight ? "border-primary" : "border-border"}`}>
+        {!disabled && <div className={`w-1.5 h-1.5 ${highlight ? "bg-primary" : "bg-border"}`} />}
+      </div>
       {text}
     </li>
   );
@@ -464,9 +558,9 @@ function PricingFeature({ text, highlight, disabled }: { text: string; highlight
 
 function ModeCard({ icon: Icon, title, subtitle, desc, color, mode }: { icon: LucideIcon; title: string; subtitle: string; desc: string; color: string; mode: string }) {
   const colorMap: Record<string, string> = {
-    primary: "text-primary border-primary/30 bg-primary/5 shadow-primary/20",
-    secondary: "text-secondary border-secondary/30 bg-secondary/5 shadow-secondary/20",
-    destructive: "text-destructive border-destructive/30 bg-destructive/5 shadow-destructive/20",
+    primary: "text-primary border-primary/30 bg-primary/5",
+    secondary: "text-secondary border-secondary/30 bg-secondary/5",
+    destructive: "text-destructive border-destructive/30 bg-destructive/5",
   };
 
   const currentStyle = colorMap[color];
