@@ -106,9 +106,9 @@ export default function LoadingDialog({
                     <Zap className="w-3 h-3 text-primary" />
                     <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">System Online</span>
                 </div>
-                <h3 className="text-2xl font-black text-foreground tracking-tighter leading-none">
+                <DialogTitle className="text-2xl font-black text-foreground tracking-tighter leading-none">
                     IDEON CORE.v1
-                </h3>
+                </DialogTitle>
               </div>
             </div>
 

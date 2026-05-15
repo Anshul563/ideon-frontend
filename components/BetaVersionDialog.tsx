@@ -54,10 +54,10 @@ export function BetaVersionDialog() {
               </div>
               
               <div className="space-y-2 relative z-10">
-                <h3 className="text-2xl font-black tracking-tighter uppercase leading-tight">
+                <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-tight">
                   Early Access <br />
                   <span className="text-primary">Intelligence</span>
-                </h3>
+                </DialogTitle>
                 <div className="inline-block px-2 py-1 bg-primary/10 border border-primary/20 text-[8px] font-black text-primary uppercase tracking-[0.2em]">
                   Live Environment
                 </div>
