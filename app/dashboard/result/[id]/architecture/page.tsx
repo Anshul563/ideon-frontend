@@ -120,10 +120,10 @@ const CustomNode = memo(({ data }: NodeProps) => {
         </div>
         <div className="flex flex-col">
           <span className="text-[10px] font-black uppercase tracking-widest opacity-50 leading-none mb-1">
-            {(data.category as string) || "Component"}
+            {(data?.category as string) || "Component"}
           </span>
           <span className="text-xs font-black tracking-tight text-foreground truncate">
-            {data.label as string}
+            {data?.label as string}
           </span>
         </div>
       </div>
@@ -149,22 +149,22 @@ const DatabaseNode = memo(({ data }: NodeProps) => {
         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
       </div>
       <div className="p-0">
-        {(data.columns as any[]).map((col: any, i: number) => (
+        {(data.columns as any[] || []).map((col: any, i: number) => (
           <div key={i} className="flex items-center justify-between px-4 py-2.5 border-b border-border/30 last:border-0 hover:bg-primary/5 relative group transition-colors">
             <Handle 
               type="target" 
               position={Position.Left} 
-              id={`${col.name}-target`} 
+              id={`${col?.name}-target`} 
               className="bg-primary! border-none! w-1.5! h-1.5! -left-1!" 
             />
             
             <div className="flex items-center gap-3">
-              <span className="text-[10px] font-bold text-foreground/90">{col.name}</span>
+              <span className="text-[10px] font-bold text-foreground/90">{col?.name}</span>
             </div>
             
             <div className="flex items-center gap-2">
-              <span className="text-[9px] text-muted-foreground italic opacity-70">{col.type}</span>
-              {col.key && (
+              <span className="text-[9px] text-muted-foreground italic opacity-70">{col?.type}</span>
+              {col?.key && (
                 <div className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none border ${
                   col.key === 'primary' 
                     ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' 
@@ -178,7 +178,7 @@ const DatabaseNode = memo(({ data }: NodeProps) => {
             <Handle 
               type="source" 
               position={Position.Right} 
-              id={`${col.name}-source`} 
+              id={`${col?.name}-source`} 
               className="bg-primary! border-none! w-1.5! h-1.5! -right-1!" 
             />
           </div>
@@ -324,7 +324,14 @@ export default function ArchitecturePage() {
         );
         setData(res.data);
 
-        const rawArchData = res.data.result?.architecture;
+        let rawArchData = res.data.result?.architecture;
+        if (typeof rawArchData === "string") {
+          try {
+            rawArchData = JSON.parse(rawArchData);
+          } catch (e) {
+            console.error("Failed to parse architecture JSON string", e);
+          }
+        }
 
         if (rawArchData && (rawArchData.architecture?.nodes || rawArchData.nodes)) {
           // Architecture Flow
@@ -332,7 +339,7 @@ export default function ArchitecturePage() {
           const edgesData = rawArchData.architecture?.edges || rawArchData.edges;
           const techStack = rawArchData.tech_stack || [];
 
-          if (nodesData && nodesData.length > 0) {
+          if (Array.isArray(nodesData) && nodesData.length > 0) {
             const styledNodes = nodesData.map((n: any) => ({
               ...n,
               type: "custom",
@@ -343,7 +350,7 @@ export default function ArchitecturePage() {
               },
             }));
 
-            const styledEdges = (edgesData || []).map((e: any) => ({
+            const styledEdges = (Array.isArray(edgesData) ? edgesData : []).map((e: any) => ({
               ...e,
               animated: true,
               label: e.label || "",
@@ -359,20 +366,21 @@ export default function ArchitecturePage() {
 
           // Database Flow
           const dbSchema = rawArchData.database_schema;
-          if (dbSchema && dbSchema.length > 0) {
+          if (Array.isArray(dbSchema) && dbSchema.length > 0) {
             const dNodes: Node[] = [];
             const dEdges: Edge[] = [];
 
             dbSchema.forEach((table: any, idx: number) => {
+              if (!table || !table.table) return;
               dNodes.push({
                 id: table.table,
                 type: "database",
                 position: { x: (idx % 2) * 400, y: Math.floor(idx / 2) * 300 },
-                data: { label: table.table, columns: table.columns },
+                data: { label: table.table, columns: table.columns || [] },
               });
 
-              table.columns.forEach((col: any) => {
-                if (col.key === "foreign" && col.references) {
+              (table.columns || []).forEach((col: any) => {
+                if (col && col.key === "foreign" && col.references) {
                   dEdges.push({
                     id: `e-${table.table}-${col.references.table}`,
                     source: col.references.table,
@@ -819,9 +827,9 @@ export default function ArchitecturePage() {
                       <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
                         <div className="p-4 bg-primary/5 border border-primary/20">
                           <span className="text-[9px] font-black text-primary uppercase tracking-widest block mb-1">Active Selection</span>
-                          <h4 className="text-lg font-black tracking-tight text-foreground">{selectedNode.data.label as string}</h4>
+                          <h4 className="text-lg font-black tracking-tight text-foreground">{selectedNode?.data?.label as string}</h4>
                           <span className="px-2 py-0.5 bg-primary text-primary-foreground text-[8px] font-black uppercase mt-2 inline-block">
-                            {selectedNode.data.category as string}
+                            {selectedNode?.data?.category as string}
                           </span>
                         </div>
 
@@ -829,7 +837,7 @@ export default function ArchitecturePage() {
                            <div className="p-3 bg-accent/30 border border-border">
                               <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Operational Role</span>
                               <p className="text-xs font-medium text-foreground/80 leading-relaxed">
-                                This {selectedNode.data.category as string} component handles critical system operations and data flow management within the {selectedNode.data.label as string} sub-system.
+                                This {selectedNode?.data?.category as string} component handles critical system operations and data flow management within the {selectedNode?.data?.label as string} sub-system.
                               </p>
                            </div>
                            <div className="p-3 bg-accent/30 border border-border">
@@ -917,12 +925,12 @@ export default function ArchitecturePage() {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {table.columns.map((col, cidx) => (
+                                  {(table.columns || []).map((col: any, cidx: number) => (
                                     <tr key={cidx} className="border-b border-border/50 last:border-0 hover:bg-primary/5 transition-colors">
-                                      <td className="px-3 py-1.5 text-foreground font-bold">{col.name}</td>
-                                      <td className="px-3 py-1.5 text-muted-foreground">{col.type}</td>
+                                      <td className="px-3 py-1.5 text-foreground font-bold">{col?.name}</td>
+                                      <td className="px-3 py-1.5 text-muted-foreground">{col?.type}</td>
                                       <td className="px-3 py-1.5 text-right">
-                                        {col.key && (
+                                        {col?.key && (
                                           <span className={`px-1 py-0.5 text-[7px] font-black uppercase rounded-none ${
                                             col.key === 'primary' ? 'bg-amber-500/20 text-amber-500' : 'bg-indigo-500/20 text-indigo-500'
                                           }`}>

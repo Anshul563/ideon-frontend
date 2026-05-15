@@ -41,7 +41,7 @@ export default function IdeaResult({ data }: { data: AnalysisResult | null }) {
     if (score >= 5) return "bg-muted-foreground";
     return "bg-destructive";
   };
-  const overallScore = data.scoring?.scores?.overall ?? 0;
+  const overallScore = data.scoring?.scores?.overall ?? data.scoring?.totalScore ?? data.scoring?.score ?? 0;
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
