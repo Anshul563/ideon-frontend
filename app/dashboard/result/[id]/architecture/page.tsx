@@ -229,6 +229,128 @@ export default function ArchitecturePage() {
     }
   };
 
+  useEffect(() => {
+    const handleFullscreenChange = () =>
+      setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [],
+  );
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [],
+  );
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [],
+  );
+
+  const onNodeClick = useCallback((_: any, node: Node) => {
+    setSelectedNode(node);
+    setActivePanel("details");
+  }, []);
+
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        );
+        setData(res.data);
+
+        let rawArchData = res.data.result?.architecture;
+        if (typeof rawArchData === "string") {
+          try {
+            rawArchData = JSON.parse(rawArchData);
+          } catch (e) {
+            console.error("Failed to parse architecture JSON string", e);
+          }
+        }
+
+        if (rawArchData && (rawArchData.architecture?.nodes || rawArchData.nodes)) {
+          const nodesData = rawArchData.architecture?.nodes || rawArchData.nodes;
+          const edgesData = rawArchData.architecture?.edges || rawArchData.edges;
+
+          if (Array.isArray(nodesData) && nodesData.length > 0) {
+            const styledNodes = nodesData.map((n: any) => ({
+              ...n,
+              type: "custom",
+              data: { 
+                ...(n.data || {}), 
+                category: n.data?.category || "backend",
+                label: n.data?.label || n.id
+              },
+            }));
+
+            const styledEdges = (Array.isArray(edgesData) ? edgesData : []).map((e: any) => ({
+              ...e,
+              animated: true,
+              label: e.label || "",
+              style: { stroke: "var(--primary)", strokeWidth: 2 },
+            }));
+
+            setArchFlow({ nodes: styledNodes, edges: styledEdges });
+            if (viewMode === "architecture") {
+              setNodes(styledNodes);
+              setEdges(styledEdges);
+            }
+          }
+
+          const dbSchema = rawArchData.database_schema;
+          if (Array.isArray(dbSchema) && dbSchema.length > 0) {
+            const dNodes: Node[] = [];
+            const dEdges: Edge[] = [];
+
+            dbSchema.forEach((table: any, idx: number) => {
+              if (!table || !table.table) return;
+              dNodes.push({
+                id: table.table,
+                type: "database",
+                position: { x: (idx % 2) * 400, y: Math.floor(idx / 2) * 300 },
+                data: { label: table.table, columns: table.columns || [] },
+              });
+
+              (table.columns || []).forEach((col: any) => {
+                if (col && col.key === "foreign" && col.references) {
+                  dEdges.push({
+                    id: `e-${table.table}-${col.references.table}`,
+                    source: col.references.table,
+                    target: table.table,
+                    sourceHandle: `${col.references.column}-source`,
+                    targetHandle: `${col.name}-target`,
+                    animated: true,
+                    style: { stroke: "#6366f1", strokeWidth: 2 },
+                  });
+                }
+              });
+            });
+
+            setDbFlow({ nodes: dNodes, edges: dEdges });
+            if (viewMode === "database") {
+              setNodes(dNodes);
+              setEdges(dEdges);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch architecture:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id && !planLoading) fetchResult();
+  }, [id, theme, isPaid, planLoading, viewMode, archFlow, dbFlow]);
+
   if (planLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -286,319 +408,7 @@ export default function ArchitecturePage() {
     );
   }
 
-  useEffect(() => {
-    const handleFullscreenChange = () =>
-      setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [],
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [],
-  );
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [],
-  );
-
-  const onNodeClick = useCallback((_: any, node: Node) => {
-    setSelectedNode(node);
-    setActivePanel("details");
-  }, []);
-
-  useEffect(() => {
-    const fetchResult = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          },
-        );
-        setData(res.data);
-
-        let rawArchData = res.data.result?.architecture;
-        if (typeof rawArchData === "string") {
-          try {
-            rawArchData = JSON.parse(rawArchData);
-          } catch (e) {
-            console.error("Failed to parse architecture JSON string", e);
-          }
-        }
-
-        if (rawArchData && (rawArchData.architecture?.nodes || rawArchData.nodes)) {
-          // Architecture Flow
-          const nodesData = rawArchData.architecture?.nodes || rawArchData.nodes;
-          const edgesData = rawArchData.architecture?.edges || rawArchData.edges;
-          const techStack = rawArchData.tech_stack || [];
-
-          if (Array.isArray(nodesData) && nodesData.length > 0) {
-            const styledNodes = nodesData.map((n: any) => ({
-              ...n,
-              type: "custom",
-              data: { 
-                ...(n.data || {}), 
-                category: n.data?.category || "backend",
-                label: n.data?.label || n.id
-              },
-            }));
-
-            const styledEdges = (Array.isArray(edgesData) ? edgesData : []).map((e: any) => ({
-              ...e,
-              animated: true,
-              label: e.label || "",
-              style: { stroke: "var(--primary)", strokeWidth: 2 },
-            }));
-
-            setArchFlow({ nodes: styledNodes, edges: styledEdges });
-            if (viewMode === "architecture") {
-              setNodes(styledNodes);
-              setEdges(styledEdges);
-            }
-          }
-
-          // Database Flow
-          const dbSchema = rawArchData.database_schema;
-          if (Array.isArray(dbSchema) && dbSchema.length > 0) {
-            const dNodes: Node[] = [];
-            const dEdges: Edge[] = [];
-
-            dbSchema.forEach((table: any, idx: number) => {
-              if (!table || !table.table) return;
-              dNodes.push({
-                id: table.table,
-                type: "database",
-                position: { x: (idx % 2) * 400, y: Math.floor(idx / 2) * 300 },
-                data: { label: table.table, columns: table.columns || [] },
-              });
-
-              (table.columns || []).forEach((col: any) => {
-                if (col && col.key === "foreign" && col.references) {
-                  dEdges.push({
-                    id: `e-${table.table}-${col.references.table}`,
-                    source: col.references.table,
-                    target: table.table,
-                    sourceHandle: `${col.references.column}-source`,
-                    targetHandle: `${col.name}-target`,
-                    animated: true,
-                    style: { stroke: "#6366f1", strokeWidth: 2 },
-                  });
-                }
-              });
-            });
-
-            setDbFlow({ nodes: dNodes, edges: dEdges });
-            if (viewMode === "database") {
-              setNodes(dNodes);
-              setEdges(dEdges);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch architecture:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const generateFallbackArchitecture = (stack: string[]) => {
-      // Helper to find tech by keyword
-      const findTech = (keywords: string[], fallback: string) => {
-        const found = stack.find((s) =>
-          keywords.some((k) => s.toLowerCase().includes(k.toLowerCase())),
-        );
-        return found || fallback;
-      };
-
-      const nodes: Node[] = [
-        // Level 0: Client
-        {
-          id: "1",
-          type: "custom",
-          position: { x: 250, y: 0 },
-          data: {
-            label: findTech(
-              ["next", "react", "mobile", "flutter"],
-              "Web Client",
-            ),
-            category: "frontend",
-          },
-        },
-
-        // Level 1: Edge/Global
-        {
-          id: "2",
-          type: "custom",
-          position: { x: 250, y: 120 },
-          data: {
-            label: findTech(
-              ["cloudfront", "cdn", "cloudflare", "edge"],
-              "Global CDN / Edge",
-            ),
-            category: "infrastructure",
-          },
-        },
-
-        // Level 2: Gateway & Security
-        {
-          id: "3",
-          type: "custom",
-          position: { x: 100, y: 240 },
-          data: {
-            label: findTech(
-              ["waf", "shield", "firewall"],
-              "WAF & DDoS Protection",
-            ),
-            category: "security",
-          },
-        },
-        {
-          id: "4",
-          type: "custom",
-          position: { x: 400, y: 240 },
-          data: {
-            label: findTech(["gateway", "kong", "nginx", "alb"], "API Gateway"),
-            category: "backend",
-          },
-        },
-
-        // Level 3: Services
-        {
-          id: "5",
-          type: "custom",
-          position: { x: 100, y: 400 },
-          data: {
-            label: findTech(["auth", "clerk", "cognito"], "Auth Service"),
-            category: "backend",
-          },
-        },
-        {
-          id: "6",
-          type: "custom",
-          position: { x: 400, y: 400 },
-          data: { label: "Core Microservice", category: "backend" },
-        },
-
-        // Level 4: Messaging & Queue
-        {
-          id: "7",
-          type: "custom",
-          position: { x: 250, y: 550 },
-          data: {
-            label: findTech(
-              ["kafka", "rabbit", "redis"],
-              "Event Bus (Kafka/Redis)",
-            ),
-            category: "messaging",
-          },
-        },
-
-        // Level 5: Storage
-        {
-          id: "8",
-          type: "custom",
-          position: { x: 100, y: 700 },
-          data: {
-            label: findTech(
-              ["postgres", "mongo", "sql", "db"],
-              "Primary Database",
-            ),
-            category: "database",
-          },
-        },
-        {
-          id: "9",
-          type: "custom",
-          position: { x: 400, y: 700 },
-          data: {
-            label: findTech(["s3", "storage", "blob"], "Object Storage (S3)"),
-            category: "infrastructure",
-          },
-        },
-
-        // Level 6: DevOps & Obs
-        {
-          id: "10",
-          type: "custom",
-          position: { x: 100, y: 850 },
-          data: {
-            label: findTech(
-              ["prometheus", "grafana", "elk", "sentry"],
-              "Observability Stack",
-            ),
-            category: "observability",
-          },
-        },
-        {
-          id: "11",
-          type: "custom",
-          position: { x: 400, y: 850 },
-          data: {
-            label: findTech(
-              ["actions", "jenkins", "terraform"],
-              "CI/CD Pipeline",
-            ),
-            category: "devops",
-          },
-        },
-      ];
-
-      const edges: Edge[] = [
-        {
-          id: "e1-2",
-          source: "1",
-          target: "2",
-          animated: true,
-          label: "HTTPS",
-        },
-        { id: "e2-3", source: "2", target: "3", animated: true },
-        { id: "e2-4", source: "2", target: "4", animated: true },
-        { id: "e4-5", source: "4", target: "5", animated: true, label: "JWT" },
-        { id: "e4-6", source: "4", target: "6", animated: true, label: "gRPC" },
-        {
-          id: "e6-7",
-          source: "6",
-          target: "7",
-          animated: true,
-          label: "Publish",
-        },
-        { id: "e6-8", source: "6", target: "8", animated: true, label: "SQL" },
-        {
-          id: "e6-9",
-          source: "6",
-          target: "9",
-          animated: true,
-          label: "Upload",
-        },
-        {
-          id: "e6-10",
-          source: "6",
-          target: "10",
-          animated: true,
-          label: "Metrics",
-        },
-        {
-          id: "e11-6",
-          source: "11",
-          target: "6",
-          animated: true,
-          label: "Deploy",
-        },
-      ];
-
-      setNodes(nodes);
-      setEdges(edges);
-    };
-
-    if (id && !planLoading) fetchResult();
-  }, [id, theme, isPaid, planLoading]);
 
   if (loading || planLoading)
     return (
