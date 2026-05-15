@@ -19,6 +19,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import LoadingDialog from "../../../components/LoadingDialog";
+import { ComingSoonDialog } from "../../../components/ComingSoonDialog";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { Lock } from "lucide-react";
 import type {
@@ -36,6 +37,8 @@ export default function ResultPage() {
   const [data, setData] = useState<IdeaRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<"full" | "stress" | "roast">("full");
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
   const { isPaid } = useUserPlan();
 
   useEffect(() => {
@@ -43,10 +46,9 @@ export default function ResultPage() {
 
     const fetchResult = async () => {
       try {
+        const token = localStorage.getItem("token");
         const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         
         setData(res.data);
@@ -55,18 +57,15 @@ export default function ResultPage() {
         if (res.data.status === "pending") {
           intervalId = setInterval(async () => {
             try {
+              const token = localStorage.getItem("token");
               const statusRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/status/${id}`, {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
               });
 
               if (statusRes.data.status === "completed") {
                 // Fetch full data once completed
                 const fullRes = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`, {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
+                  headers: token ? { Authorization: `Bearer ${token}` } : {},
                 });
                 setData(fullRes.data);
                 clearInterval(intervalId);
@@ -368,6 +367,7 @@ export default function ResultPage() {
 
   const handleSwitchMode = async (mode: "full" | "stress" | "roast") => {
     if (!data || data.mode === mode) return;
+    setAnalysisMode(mode);
     setIsAnalyzing(true);
 
     try {
@@ -456,7 +456,12 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <LoadingDialog isOpen={isAnalyzing} />
+      <ComingSoonDialog 
+        isOpen={isComingSoonOpen} 
+        onOpenChange={setIsComingSoonOpen} 
+        featureName="Report Sharing" 
+      />
+      <LoadingDialog isOpen={isAnalyzing} mode={analysisMode} idea={data.idea} />
       
       <div className="max-w-6xl mx-auto px-4 md:px-6 pt-8 md:pt-12">
         <nav className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-8 md:mb-12">
@@ -537,7 +542,12 @@ export default function ResultPage() {
             <div className="h-8 w-px bg-border mx-1 shrink-0" />
 
             <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="icon" className="h-9 w-9 bg-accent/50 hover:bg-accent border-border rounded-none text-muted-foreground hover:text-foreground transition-all">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={() => setIsComingSoonOpen(true)}
+                className="h-9 w-9 bg-accent/50 hover:bg-accent border-border rounded-none text-muted-foreground hover:text-foreground transition-all"
+              >
                 <Share2 className="w-4 h-4" />
               </Button>
               <Button 

@@ -59,6 +59,7 @@ import LoadingDialog from "@/components/LoadingDialog";
 import type { IdeaRecord } from "@/lib/types";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { Sparkles } from "lucide-react";
+import { ComingSoonDialog } from "@/components/ComingSoonDialog";
 
 // --- Custom Components ---
 
@@ -205,6 +206,8 @@ export default function ArchitecturePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
   const { isPaid, loading: planLoading } = useUserPlan();
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState("");
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
@@ -248,19 +251,18 @@ export default function ArchitecturePage() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
+        const token = localStorage.getItem("token");
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ideas/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
           },
         );
         setData(res.data);
 
         const rawArchData = res.data.result?.architecture;
 
-        if (rawArchData && isPaid) {
+        if (rawArchData && (rawArchData.architecture?.nodes || rawArchData.nodes)) {
           // Architecture Flow
           const nodesData = rawArchData.architecture?.nodes || rawArchData.nodes;
           const edgesData = rawArchData.architecture?.edges || rawArchData.edges;
@@ -529,41 +531,20 @@ export default function ArchitecturePage() {
   if (loading || planLoading)
     return (
       <div className="h-screen bg-background flex items-center justify-center">
-        <LoadingDialog isOpen={true} />
+        <LoadingDialog isOpen={true} mode="architecture" idea={data?.idea} />
       </div>
     );
 
-  if (!isPaid) {
-    return (
-      <div className="h-screen bg-background flex flex-col items-center justify-center p-6 text-center font-mono">
-        <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mb-8 border border-indigo-500/20 shadow-2xl">
-          <Lock className="w-10 h-10 text-indigo-500" />
-        </div>
-        <h1 className="text-3xl font-black uppercase tracking-tighter mb-4">Architecture Restricted</h1>
-        <p className="text-muted-foreground max-w-md mb-10 leading-relaxed text-sm">
-          Technical blueprints and architecture diagrams are only available for <span className="text-indigo-500 font-bold">Pro</span> and <span className="text-accent font-bold">Enterprise</span> users.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-           <Button 
-             onClick={() => router.push('/pricing')}
-             className="flex-1 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 font-black uppercase tracking-widest text-xs shadow-lg shadow-indigo-500/20"
-           >
-             Upgrade to View
-           </Button>
-           <Button 
-             variant="outline"
-             onClick={() => router.back()}
-             className="flex-1 h-12 rounded-xl border-2 font-black uppercase tracking-widest text-xs"
-           >
-             Go Back
-           </Button>
-        </div>
-      </div>
-    );
-  }
+  // Guest/Public viewing logic: we show the view if data was successfully fetched,
+  // the backend already restricts the result content based on the original user's plan.
 
   return (
     <div className="h-screen w-full flex flex-col bg-background overflow-hidden selection:bg-primary/30">
+      <ComingSoonDialog 
+        isOpen={isComingSoonOpen} 
+        onOpenChange={setIsComingSoonOpen} 
+        featureName={comingSoonFeature} 
+      />
       {/* Dynamic Header */}
       <header className="h-20 border-b-2 border-border px-4 md:px-8 flex items-center justify-between bg-card/80 backdrop-blur-2xl z-20 sticky top-0">
         <div className="flex items-center gap-6">
@@ -595,15 +576,8 @@ export default function ArchitecturePage() {
             variant="outline"
             size="icon"
             onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Ideon Blueprint',
-                  text: `Technical blueprint for ${data?.idea}`,
-                  url: window.location.href,
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-              }
+              setComingSoonFeature("Blueprint Sharing");
+              setIsComingSoonOpen(true);
             }}
             className="rounded-none border-2 border-border h-10 w-10 shrink-0 hover:bg-primary hover:text-primary-foreground transition-all"
           >
@@ -623,6 +597,10 @@ export default function ArchitecturePage() {
           </Button>
           <Button
             variant="default"
+            onClick={() => {
+              setComingSoonFeature("Infrastructure Deployment");
+              setIsComingSoonOpen(true);
+            }}
             className="rounded-none bg-primary text-primary-foreground font-black uppercase tracking-widest px-3 md:px-6 h-10 shadow-[4px_4px_0px_var(--primary-foreground)] border-2 border-primary active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1.5 shrink-0"
           >
             Deploy Infra

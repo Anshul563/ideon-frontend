@@ -34,6 +34,7 @@ function DashboardContent() {
   const [businessModel, setBusinessModel] = useState("");
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<"full" | "stress" | "roast">("full");
   const [verifiedData, setVerifiedData] = useState<PaymentVerification | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -94,6 +95,7 @@ function DashboardContent() {
   };
 
   const handleAnalyze = async (mode: "full" | "stress" | "roast" = "full") => {
+    setAnalysisMode(mode);
     setLoading(true);
 
     try {
@@ -380,7 +382,7 @@ function DashboardContent() {
         </div>
       </div>
 
-      <LoadingDialog isOpen={loading} />
+      <LoadingDialog isOpen={loading} mode={analysisMode} idea={idea} />
     </div>
   );
 }
